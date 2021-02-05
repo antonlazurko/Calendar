@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar</title>
+  </head>
+  <body>
+    <div class="col-md-3">
+      <label for="validationCustom04" class="form-label">Members</label>
+      <select form="form" class="form-select user-select" required autofocus>
+        <option selected value="">All members</option>
+        <option value="0">John</option>
+        <option value="1">Maria</option>
+        <option value="2">David</option>
+        <option value="3">Anna</option>
+      </select>
+    </div>
+    <button type="button" class="createEventBtn btn btn-primary">
+      Create event+
+    </button>
+    <table
+      id="table"
+      class="table table-primary table-striped table-bordered"
+      border
+    >
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Monday</th>
+          <th scope="col">Thuesday</th>
+          <th scope="col">Wednesday</th>
+          <th scope="col">Thursday</th>
+          <th scope="col">Friday</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <form id="form" class="row g-3 needs-validation" novalidate>
+      <div class="col-md-4">
+        <label for="validationCustom01" class="form-label"
+          >Name of event
+        </label>
+        <input
+          type="text"
+          class="form-control input"
+          id="validationCustom01"
+          required
+          form="form"
+          name="input"
+          type="text"
+        />
+        <div class="valid-feedback">Looks good!</div>
+      </div>
+      <div class="col-md-3">
+        <label for="validationCustom04" class="form-label">Members</label>
+        <select
+          form="form"
+          class="form-select form-user-select"
+          id="validationCustom04"
+          required
+          multiple
+        >
+          <option value="0">John</option>
+          <option value="1">Maria</option>
+          <option value="2">David</option>
+          <option value="3">Anna</option>
+        </select>
+        <div class="invalid-feedback">Please select a valid state.</div>
+      </div>
+      <div class="col-md-3">
+        <label for="validationCustom04" class="form-label">Event day</label>
+        <select
+          form="form"
+          class="form-select day-select"
+          id="validationCustom04"
+          required
+        >
+          <option selected disabled value="Nothing">Choose day</option>
+          <option value="0">monday</option>
+          <option value="1">thuesday</option>
+          <option value="2">wednesday</option>
+          <option value="3">thursday</option>
+          <option value="4">friday</option>
+        </select>
+        <div class="invalid-feedback">Please select day</div>
+      </div>
+      <div class="col-md-3">
+        <label for="validationCustom04" class="form-label">Event time</label>
+        <select
+          form="form"
+          class="form-select time-select"
+          id="validationCustom04"
+          required
+        >
+          <option selected disabled value="Nothing">Choose time</option>
+          <option value="0">10:00</option>
+          <option value="1">11:00</option>
+          <option value="2">12:00</option>
+          <option value="3">13:00</option>
+          <option value="4">14:00</option>
+          <option value="5">15:00</option>
+          <option value="6">16:00</option>
+          <option value="7">17:00</option>
+          <option value="8">18:00</option>
+        </select>
+        <div class="invalid-feedback">Please select time.</div>
+      </div>
+      <div class="col-12">
+        <button
+          type="button"
+          form="form"
+          class="btn btn-secondary cancel-btn"
+          aria-label="Cancel"
+        >
+          Cancel
+        </button>
+      </div>
+      <div class="col-12">
+        <button
+          form="form"
+          type="submit"
+          class="btn btn-primary submit-btn"
+          aria-label="Create"
+        >
+          Create
+        </button>
+      </div>
+    </form>
+  </body>
+</html>
