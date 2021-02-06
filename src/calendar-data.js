@@ -86,32 +86,4 @@ export const participants = [
     meetings: [],
   },
 ];
-export const meetings = [
-  // {
-  //   id: 1,
-  //   title: 'Party',
-  //   participants: [1, 3],
-  //   info: {
-  //     day: 0,
-  //     time: 1,
-  //   },
-  // },
-  // {
-  //   id: 17,
-  //   title: 'Game',
-  //   participants: [1, 4],
-  //   info: {
-  //     day: 2,
-  //     time: 1,
-  //   },
-  // },
-  // {
-  //   id: 5,
-  //   title: 'Study',
-  //   participants: [2],
-  //   info: {
-  //     day: 3,
-  //     time: 1,
-  //   },
-  // },
-];
+export const meetings = [];

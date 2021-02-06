@@ -107,13 +107,13 @@ function validateForm() {
     form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
-
   return true;
 }
 
 //on form submit function
 function onFormSubmit(e) {
   e.preventDefault();
+  // custom modal closing
   submitBtn.setAttribute('data-bs-dismiss', 'modal');
 
   if (!validateForm()) {
@@ -127,6 +127,7 @@ function onFormSubmit(e) {
       meeting.info.time === parseInt(timeSelectEl.value),
   );
   if (isAvailableTime.length) {
+    submitBtn.removeAttribute('data-bs-dismiss');
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
     return;
   }
@@ -142,7 +143,7 @@ function onFormSubmit(e) {
     },
   };
 
-  //pushing event object to events array
+  //pushing event object to events array and filling LS
   meetings.push(meeting);
   localStorageAPI.setLocalStorageData('meetings', meetings);
   utils.refreshForm(

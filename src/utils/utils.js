@@ -66,13 +66,13 @@ function selectCreator(participants, node, selectOtionTemplate) {
     node.insertAdjacentHTML('beforeend', selectOtionTemplate(participant));
   });
 }
+
 export default {
   getAvailableMeetings,
   getgetAvailableMeetingsByParticipant,
   getSelectedMembers,
   generateMeetingId,
   refreshForm,
-  modalClose,
   selectCreator,
   meetingDaysObjGeneration,
 };
