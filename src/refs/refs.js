@@ -1,6 +1,8 @@
-export const memberSelectEl = document.querySelector('.user-select');
+export const participantSelectEl = document.querySelector('.user-select');
 export const inputEl = document.querySelector('.input');
-export const userSelectEl = document.querySelector('.form-user-select');
+export const formParticipantSelectEl = document.querySelector(
+  '.form-user-select',
+);
 export const daySelectEl = document.querySelector('.day-select');
 export const timeSelectEl = document.querySelector('.time-select');
 export const submitBtn = document.querySelector('.submit-btn');

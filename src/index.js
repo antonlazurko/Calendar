@@ -1,29 +1,40 @@
 import 'bootstrap';
 import './sass/style.scss';
-
 import utils from './utils/utils';
+import localStorageAPI from './services/localStorageAPI';
 import {
-  memberSelectEl,
+  participantSelectEl,
   inputEl,
-  userSelectEl,
+  formParticipantSelectEl,
   daySelectEl,
   timeSelectEl,
   submitBtn,
   cancelCreateEventBtn,
   tableBody,
 } from './refs/refs';
-import { timeArray, meetings } from './calendar-data';
+import { timeArray, meetings, participants, daysArray } from './calendar-data';
 import template from './templates/alert-template.hbs';
+import selectOtionTemplate from './templates/select-options-template.hbs';
 import { alerts } from './alerts/alerts';
-
+const localStorageData = localStorageAPI.getParsedLocalStorageData('meetings');
+localStorageData?.map(meeting => meetings.push(meeting));
 let userId = 0;
 const NOTHIG = 'Nothing';
-function memberSelectChange(e) {
+
+//markup render
+utils.selectCreator(participants, participantSelectEl, selectOtionTemplate);
+utils.selectCreator(participants, formParticipantSelectEl, selectOtionTemplate);
+utils.selectCreator(timeArray, timeSelectEl, selectOtionTemplate);
+utils.selectCreator(daysArray, daySelectEl, selectOtionTemplate);
+createTable(userId);
+
+//participant change funktion
+function participantSelectChange(e) {
   userId = parseInt(e.target.value);
   createTable(userId);
 }
 //table render function
-const createTable = userId => {
+function createTable(userId) {
   let rows = '';
   timeArray.map((timeObj, index) => {
     const availableMeetings = utils.getAvailableMeetings(index, meetings);
@@ -48,7 +59,7 @@ const createTable = userId => {
 
     rows += `
       <tr class="calendar-row">
-          <td>${timeObj.value}</td>
+          <td>${timeObj.name}</td>
           <td class=${days[0].className}>${days[0].name || ''}</td>
           <td class=${days[1].className}>${days[1].name || ''}</td>
           <td class=${days[2].className}>${days[2].name || ''}</td>
@@ -59,8 +70,9 @@ const createTable = userId => {
   tableBody.innerHTML = rows;
 
   tableBody.addEventListener('click', tdDelete);
-};
-createTable(userId);
+}
+
+//table data content delete function
 function tdDelete(e) {
   const el = e.target;
   if (el.tagName === 'BUTTON') {
@@ -75,6 +87,7 @@ function tdDelete(e) {
         }),
         1,
       );
+      localStorageAPI.setLocalStorageData('meetings', meetings);
       el.parentNode.classList.remove('table-success');
       el.parentNode.innerHTML = '';
     }
@@ -97,7 +110,7 @@ function validateForm() {
     form.insertAdjacentHTML('afterbegin', template(alerts.time));
     return false;
   }
-  if (utils.getSelectedMembers(userSelectEl).length === 0) {
+  if (utils.getSelectedMembers(formParticipantSelectEl).length === 0) {
     form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
@@ -111,6 +124,7 @@ function onFormSubmit(e) {
   if (!validateForm()) {
     return;
   }
+  //cheking available time
   const isAvailableTime = meetings.filter(
     meeting =>
       meeting.info.day === parseInt(daySelectEl.value) &&
@@ -123,9 +137,9 @@ function onFormSubmit(e) {
 
   //create event object
   const meeting = {
-    id: utils.generateMeetingId(meetings) + 1,
+    id: utils.generateMeetingId(meetings),
     title: inputEl.value,
-    participants: [...utils.getSelectedMembers(userSelectEl)],
+    participants: [...utils.getSelectedMembers(formParticipantSelectEl)],
     info: {
       day: parseInt(daySelectEl.value),
       time: parseInt(timeSelectEl.value),
@@ -134,30 +148,31 @@ function onFormSubmit(e) {
 
   //pushing event object to events array
   meetings.push(meeting);
-
+  localStorageAPI.setLocalStorageData('meetings', meetings);
   utils.refreshForm(
     inputEl,
     daySelectEl,
     timeSelectEl,
-    userSelectEl,
-    memberSelectEl,
+    formParticipantSelectEl,
+    participantSelectEl,
   );
   createTable(0);
+
+  utils.modalClose();
 }
 
 //on cancel form button click function
 function onCancelCreateEventBtn(e) {
   e.preventDefault();
-
   utils.refreshForm(
     inputEl,
     daySelectEl,
     timeSelectEl,
-    userSelectEl,
-    memberSelectEl,
+    formParticipantSelectEl,
+    participantSelectEl,
   );
 }
 
-memberSelectEl.addEventListener('change', memberSelectChange);
+participantSelectEl.addEventListener('change', participantSelectChange);
 submitBtn.addEventListener('click', onFormSubmit);
 cancelCreateEventBtn.addEventListener('click', onCancelCreateEventBtn);
