@@ -1,5 +1,3 @@
-import { meetings } from '../calendar-data';
-
 //form options clean function
 function refreshForm(
   inputEl,
@@ -57,16 +55,11 @@ function generateMeetingId(meetings) {
   });
   return max.id + 1;
 }
-function onCancelCreateEventBtn(e) {
-  e.preventDefault();
-  console.log('0');
-  refreshForm();
-}
+
 export default {
   getAvailableMeetings,
   getgetAvailableMeetingsByParticipant,
   getSelectedMembers,
   generateMeetingId,
   refreshForm,
-  onCancelCreateEventBtn,
 };

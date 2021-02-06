@@ -10,7 +10,7 @@ import {
   timeSelectEl,
   submitBtn,
   cancelCreateEventBtn,
-  modal,
+  tableBody,
 } from './refs/refs';
 import { timeArray, meetings } from './calendar-data';
 import template from './templates/alert-template.hbs';
@@ -24,8 +24,6 @@ function memberSelectChange(e) {
 }
 //table render function
 const createTable = userId => {
-  const table = document.querySelector('#table');
-  const tableBody = table.querySelector('tbody');
   let rows = '';
   timeArray.map((timeObj, index) => {
     const availableMeetings = utils.getAvailableMeetings(index, meetings);
@@ -85,6 +83,7 @@ function tdDelete(e) {
   return;
 }
 
+//checking valid info function
 function validateForm() {
   if (inputEl.value === '') {
     form.insertAdjacentHTML('afterbegin', template(alerts.input));
@@ -121,6 +120,8 @@ function onFormSubmit(e) {
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
     return;
   }
+
+  //create event object
   const meeting = {
     id: utils.generateMeetingId(meetings) + 1,
     title: inputEl.value,
@@ -130,7 +131,10 @@ function onFormSubmit(e) {
       time: parseInt(timeSelectEl.value),
     },
   };
+
+  //pushing event object to events array
   meetings.push(meeting);
+
   utils.refreshForm(
     inputEl,
     daySelectEl,
@@ -140,6 +144,20 @@ function onFormSubmit(e) {
   );
   createTable(0);
 }
+
+//on cancel form button click function
+function onCancelCreateEventBtn(e) {
+  e.preventDefault();
+
+  utils.refreshForm(
+    inputEl,
+    daySelectEl,
+    timeSelectEl,
+    userSelectEl,
+    memberSelectEl,
+  );
+}
+
 memberSelectEl.addEventListener('change', memberSelectChange);
 submitBtn.addEventListener('click', onFormSubmit);
-cancelCreateEventBtn.addEventListener('click', utils.onCancelCreateEventBtn);
+cancelCreateEventBtn.addEventListener('click', onCancelCreateEventBtn);
