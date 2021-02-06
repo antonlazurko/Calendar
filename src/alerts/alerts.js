@@ -1,4 +1,4 @@
-export const allerts = {
+export const alerts = {
   input: { message: 'Plese type name' },
   participants: { message: 'Plese choose participants' },
   days: { message: 'Plese choose event day' },

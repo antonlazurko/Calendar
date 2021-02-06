@@ -13,8 +13,8 @@ import {
   modal,
 } from './refs/refs';
 import { timeArray, meetings } from './calendar-data';
-import template from './templates/template.hbs';
-import { allerts } from './allerts/allerts';
+import template from './templates/alert-template.hbs';
+import { alerts } from './alerts/alerts';
 
 let userId = 0;
 const NOTHIG = 'Nothing';
@@ -35,7 +35,7 @@ const createTable = userId => {
       availableMeetings.map(meeting => {
         const day = meeting.info.day;
         days[day] = {
-          name: `${meeting.title}<button type="button" class="btn-close btn-remove" data-id="${meeting.id}"></button>`,
+          name: `${meeting.title}<button type="button" class="btn-close btn-remove" data-bs-toggle="delete-modal" data-bs-target="#exampleModal" data-id="${meeting.id}"></button>`,
           id: meeting.id,
           className: 'table-success',
         };
@@ -87,19 +87,19 @@ function tdDelete(e) {
 
 function validateForm() {
   if (inputEl.value === '') {
-    form.insertAdjacentHTML('afterbegin', template(allerts.input));
+    form.insertAdjacentHTML('afterbegin', template(alerts.input));
     return false;
   }
   if (daySelectEl.value === NOTHIG) {
-    form.insertAdjacentHTML('afterbegin', template(allerts.days));
+    form.insertAdjacentHTML('afterbegin', template(alerts.days));
     return false;
   }
   if (timeSelectEl.value === NOTHIG) {
-    form.insertAdjacentHTML('afterbegin', template(allerts.time));
+    form.insertAdjacentHTML('afterbegin', template(alerts.time));
     return false;
   }
   if (utils.getSelectedMembers(userSelectEl).length === 0) {
-    form.insertAdjacentHTML('afterbegin', template(allerts.participants));
+    form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
   return true;
@@ -118,7 +118,7 @@ function onFormSubmit(e) {
       meeting.info.time === parseInt(timeSelectEl.value),
   );
   if (isAvailableTime.length) {
-    form.insertAdjacentHTML('afterbegin', template(allerts.unavailable));
+    form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
     return;
   }
   const meeting = {
