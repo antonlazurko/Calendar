@@ -60,15 +60,6 @@ function generateMeetingId(meetings) {
   return max.id + 1;
 }
 
-// custom modal closer
-function modalClose() {
-  const backdrop = document.querySelector('.modal-backdrop');
-  const modal = document.querySelector('.modal');
-  modal.classList.remove('show');
-  document.body.classList.remove('modal-open');
-  backdrop.remove();
-}
-
 //select options render function
 function selectCreator(participants, node, selectOtionTemplate) {
   participants.map(participant => {

@@ -107,15 +107,17 @@ function validateForm() {
     form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
+
   return true;
 }
-submitBtn.setAttribute('data-bs-dismiss', 'modal');
 
 //on form submit function
 function onFormSubmit(e) {
   e.preventDefault();
+  submitBtn.setAttribute('data-bs-dismiss', 'modal');
 
   if (!validateForm()) {
+    submitBtn.removeAttribute('data-bs-dismiss');
     return;
   }
   //cheking available time
@@ -151,10 +153,6 @@ function onFormSubmit(e) {
     participantSelectEl,
   );
   createTable(0);
-  setTimeout(() => {
-    submitBtn.removeAttribute('data-bs-dismiss');
-  }, 1000);
-  // utils.modalClose();
 }
 
 //on cancel form button click function
@@ -168,7 +166,6 @@ function onCancelCreateEventBtn(e) {
     participantSelectEl,
   );
 }
-
 participantSelectEl.addEventListener('change', participantSelectChange);
 submitBtn.addEventListener('click', onFormSubmit);
 cancelCreateEventBtn.addEventListener('click', onCancelCreateEventBtn);
