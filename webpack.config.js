@@ -37,6 +37,10 @@ module.exports = {
         exclude: /(node_modules|bower_components)/,
         use: ['babel-loader'],
       },
+      {
+        test: /\.hbs$/,
+        use: 'handlebars-loader',
+      },
     ],
   },
 };

@@ -13,6 +13,9 @@ import {
   modal,
 } from './refs/refs';
 import { timeArray, meetings } from './calendar-data';
+import template from './templates/template.hbs';
+import { allerts } from './allerts/allerts';
+
 let userId = 0;
 const NOTHIG = 'Nothing';
 function memberSelectChange(e) {
@@ -84,19 +87,19 @@ function tdDelete(e) {
 
 function validateForm() {
   if (inputEl.value === '') {
-    alert('Please type event name');
+    form.insertAdjacentHTML('afterbegin', template(allerts.input));
     return false;
   }
   if (daySelectEl.value === NOTHIG) {
-    alert('Please select day');
+    form.insertAdjacentHTML('afterbegin', template(allerts.days));
     return false;
   }
   if (timeSelectEl.value === NOTHIG) {
-    alert('Please select time');
+    form.insertAdjacentHTML('afterbegin', template(allerts.time));
     return false;
   }
   if (utils.getSelectedMembers(userSelectEl).length === 0) {
-    alert('Please select member');
+    form.insertAdjacentHTML('afterbegin', template(allerts.participants));
     return false;
   }
   return true;
@@ -115,7 +118,7 @@ function onFormSubmit(e) {
       meeting.info.time === parseInt(timeSelectEl.value),
   );
   if (isAvailableTime.length) {
-    alert('Time slot is already booked. Please chose other time');
+    form.insertAdjacentHTML('afterbegin', template(allerts.unavailable));
     return;
   }
   const meeting = {
@@ -128,12 +131,15 @@ function onFormSubmit(e) {
     },
   };
   meetings.push(meeting);
-  inputEl.value = '';
-  daySelectEl.value = null;
-  timeSelectEl.value = null;
-  userSelectEl.value = null;
-  memberSelectEl.value = 0;
+  utils.refreshForm(
+    inputEl,
+    daySelectEl,
+    timeSelectEl,
+    userSelectEl,
+    memberSelectEl,
+  );
   createTable(0);
 }
 memberSelectEl.addEventListener('change', memberSelectChange);
 submitBtn.addEventListener('click', onFormSubmit);
+cancelCreateEventBtn.addEventListener('click', utils.onCancelCreateEventBtn);

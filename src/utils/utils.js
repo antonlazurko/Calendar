@@ -1,10 +1,18 @@
 import { meetings } from '../calendar-data';
 
-//table clean function
-function refreshTable() {
-  const table = document.querySelector('#table');
-  const tableBody = table.querySelector('tbody');
-  tableBody.innerHTML = '';
+//form options clean function
+function refreshForm(
+  inputEl,
+  daySelectEl,
+  timeSelectEl,
+  userSelectEl,
+  memberSelectEl,
+) {
+  inputEl.value = '';
+  daySelectEl.value = null;
+  timeSelectEl.value = null;
+  userSelectEl.value = null;
+  memberSelectEl.value = 0;
 }
 
 //get meetings for current time
@@ -49,10 +57,16 @@ function generateMeetingId(meetings) {
   });
   return max.id + 1;
 }
+function onCancelCreateEventBtn(e) {
+  e.preventDefault();
+  console.log('0');
+  refreshForm();
+}
 export default {
-  refreshTable,
   getAvailableMeetings,
   getgetAvailableMeetingsByParticipant,
   getSelectedMembers,
   generateMeetingId,
+  refreshForm,
+  onCancelCreateEventBtn,
 };
