@@ -42,12 +42,7 @@ function createTable(userId) {
 
     if (userId === 0) {
       availableMeetings.map(meeting => {
-        const day = meeting.info.day;
-        days[day] = {
-          name: `${meeting.title}<button type="button" class="btn-close btn-remove" data-bs-toggle="delete-modal" data-bs-target="#exampleModal" data-id="${meeting.id}"></button>`,
-          id: meeting.id,
-          className: 'table-success',
-        };
+        utils.meetingDaysObjGeneration(meeting, days);
       });
     } else {
       utils.getgetAvailableMeetingsByParticipant(
@@ -83,7 +78,7 @@ function tdDelete(e) {
       const meetingId = e.target.getAttribute('data-id');
       meetings.splice(
         meetings.findIndex(function (meeting) {
-          return meeting.id === meetingId;
+          meeting.id === meetingId;
         }),
         1,
       );
@@ -91,9 +86,7 @@ function tdDelete(e) {
       el.parentNode.classList.remove('table-success');
       el.parentNode.innerHTML = '';
     }
-    return;
   }
-  return;
 }
 
 //checking valid info function
@@ -116,6 +109,7 @@ function validateForm() {
   }
   return true;
 }
+submitBtn.setAttribute('data-bs-dismiss', 'modal');
 
 //on form submit function
 function onFormSubmit(e) {
@@ -157,8 +151,10 @@ function onFormSubmit(e) {
     participantSelectEl,
   );
   createTable(0);
-
-  utils.modalClose();
+  setTimeout(() => {
+    submitBtn.removeAttribute('data-bs-dismiss');
+  }, 1000);
+  // utils.modalClose();
 }
 
 //on cancel form button click function

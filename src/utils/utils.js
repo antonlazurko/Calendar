@@ -28,25 +28,29 @@ function getgetAvailableMeetingsByParticipant(
 ) {
   meetingsArray.map(meeting => {
     if (meeting.participants.includes(userId)) {
-      const day = meeting.info.day;
-      daysArray[day] = {
-        name: `${meeting.title} <button type="button" class="btn-close btn-remove" data-id="${meeting.id}"></button>`,
-        id: meeting.id,
-        className: 'table-success',
-      };
+      meetingDaysObjGeneration(meeting, daysArray);
     }
   });
 }
-
+function meetingDaysObjGeneration(meetingObj, daysArr) {
+  const day = meetingObj.info.day;
+  daysArr[day] = {
+    name: `${meetingObj.title} <button type="button" class="btn-close btn-remove" data-id="${meetingObj.id}"></button>`,
+    id: meetingObj.id,
+    className: 'table-success',
+  };
+}
 //get  selected participants from form
 function getSelectedMembers(userSelectEl) {
   const values = [];
+  const select = userSelectEl.options;
   if (userSelectEl.multiple) {
-    for (let i = 0; i < userSelectEl.options.length; i += 1) {
-      if (userSelectEl.options[i].selected)
-        values.push(parseInt(userSelectEl.options[i].value));
+    for (let i = 0; i < select.length; i += 1) {
+      if (select[i].selected) values.push(parseInt(select[i].value));
     }
-  } else values.push(parseInt(userSelectEl.value));
+  } else {
+    values.push(parseInt(userSelectEl.value));
+  }
   return values;
 }
 function generateMeetingId(meetings) {
@@ -79,4 +83,5 @@ export default {
   refreshForm,
   modalClose,
   selectCreator,
+  meetingDaysObjGeneration,
 };
