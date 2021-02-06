@@ -1,3 +1,5 @@
+import { meetings } from '../calendar-data';
+
 //table clean function
 function refreshTable() {
   const table = document.querySelector('#table');
@@ -7,7 +9,6 @@ function refreshTable() {
 
 //get meetings for current time
 function getAvailableMeetings(index, array) {
-  console.log(array);
   return array.filter(meeting => {
     return meeting.info.time === index;
   });
@@ -20,15 +21,18 @@ function getgetAvailableMeetingsByParticipant(
   daysArray,
 ) {
   meetingsArray.map(meeting => {
-    if (meeting.participants.includes('userId')) {
+    if (meeting.participants.includes(userId)) {
       const day = meeting.info.day;
       daysArray[day] = {
-        name: `${meeting.title} <a class="btn-remove" data-id="${meeting.id}" href="#">remove</a>`,
+        name: `${meeting.title} <button type="button" class="btn-close btn-remove" data-id="${meeting.id}"></button>`,
         id: meeting.id,
+        className: 'table-success',
       };
     }
   });
 }
+
+//get  selected participants from form
 function getSelectedMembers(userSelectEl) {
   const values = [];
   if (userSelectEl.multiple) {
@@ -37,13 +41,18 @@ function getSelectedMembers(userSelectEl) {
         values.push(parseInt(userSelectEl.options[i].value));
     }
   } else values.push(parseInt(userSelectEl.value));
-  console.log(values);
   return values;
 }
-
+function generateMeetingId(meetings) {
+  const max = meetings.reduce(function (prev, current) {
+    return prev.id > current.id ? prev : current;
+  });
+  return max.id + 1;
+}
 export default {
   refreshTable,
   getAvailableMeetings,
   getgetAvailableMeetingsByParticipant,
   getSelectedMembers,
+  generateMeetingId,
 };

@@ -7,3 +7,4 @@ export const daySelectEl = document.querySelector('.day-select');
 export const timeSelectEl = document.querySelector('.time-select');
 export const submitBtn = document.querySelector('.submit-btn');
 export const cancelCreateEventBtn = document.querySelector('.cancel-btn');
+export const modal = document.querySelector('.modal');
