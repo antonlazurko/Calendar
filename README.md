@@ -17,10 +17,6 @@ In order to delete a meeting user has to click the delete icon near the meeting 
 ### “Create event” modal-screen
 At that screen user should enter meeting title, select participants (can be multiple), select day (Mon-Fri), select time (10:00-18:00).
 
-Requrimens
--------------------------
-Node version 14.5.0 and higher 
-
 Installation
 -------------------------
 + npm install
