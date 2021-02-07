@@ -25,7 +25,7 @@ Installation
 -------------------------
 + npm install
 
-+npm run dev
++ npm run dev
 
 Additional functionality
 -------------------------
