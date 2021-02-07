@@ -23,9 +23,9 @@ Node version 14.5.0 and higher
 
 Installation
 -------------------------
-npm install
-***
-npm run dev
++ npm install
+
++npm run dev
 
 Additional functionality
 -------------------------
