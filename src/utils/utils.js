@@ -1,5 +1,5 @@
 //form options clean function
-function refreshForm(
+export function refreshForm(
   inputEl,
   daySelectEl,
   timeSelectEl,
@@ -14,14 +14,14 @@ function refreshForm(
 }
 
 //get meetings for current time
-function getAvailableMeetings(index, array) {
+export function getAvailableMeetings(index, array) {
   return array.filter(meeting => {
     return meeting.info.time === index;
   });
 }
 
 //get meetings by participant
-function getgetAvailableMeetingsByParticipant(
+export function getAvailableMeetingsByParticipant(
   meetingsArray,
   userId,
   daysArray,
@@ -32,7 +32,7 @@ function getgetAvailableMeetingsByParticipant(
     }
   });
 }
-function meetingDaysObjGeneration(meetingObj, daysArr) {
+export function meetingDaysObjGeneration(meetingObj, daysArr) {
   const day = meetingObj.info.day;
   daysArr[day] = {
     name: `${meetingObj.title} <button type="button" class="btn-close btn-remove" data-id="${meetingObj.id}"></button>`,
@@ -41,7 +41,7 @@ function meetingDaysObjGeneration(meetingObj, daysArr) {
   };
 }
 //get  selected participants from form
-function getSelectedMembers(userSelectEl) {
+export function getSelectedMembers(userSelectEl) {
   const values = [];
   const select = userSelectEl.options;
   if (userSelectEl.multiple) {
@@ -53,26 +53,21 @@ function getSelectedMembers(userSelectEl) {
   }
   return values;
 }
-function generateMeetingId(meetings) {
-  const max = meetings.reduce(function (prev, current) {
-    return prev.id > current.id ? prev : current;
-  }, 1);
-  return max.id + 1;
+export function customModalClose() {
+  const modal = document.querySelector('.modal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+  modal.setAttribute('style', 'display: none;');
+  modal.removeAttribute('aria-modal');
+  modal.removeAttribute('role');
+  document.body.classList.remove('modal-open');
+  const backdrop = document.querySelector('.modal-backdrop');
+  document.body.removeChild(backdrop);
 }
 
 //select options render function
-function selectCreator(participants, node, selectOtionTemplate) {
+export function selectCreator(participants, node, selectOtionTemplate) {
   participants.map(participant => {
     node.insertAdjacentHTML('beforeend', selectOtionTemplate(participant));
   });
 }
-
-export default {
-  getAvailableMeetings,
-  getgetAvailableMeetingsByParticipant,
-  getSelectedMembers,
-  generateMeetingId,
-  refreshForm,
-  selectCreator,
-  meetingDaysObjGeneration,
-};

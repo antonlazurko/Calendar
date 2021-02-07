@@ -1,7 +1,19 @@
 import 'bootstrap';
+import { v4 as uuidv4 } from 'uuid';
 import './sass/style.scss';
-import utils from './utils/utils';
-import localStorageAPI from './services/localStorageAPI';
+import {
+  refreshForm,
+  getAvailableMeetings,
+  getAvailableMeetingsByParticipant,
+  meetingDaysObjGeneration,
+  getSelectedMembers,
+  selectCreator,
+  customModalClose,
+} from './utils/utils';
+import {
+  getParsedLocalStorageData,
+  setLocalStorageData,
+} from './services/localStorageAPI';
 import {
   participantSelectEl,
   inputEl,
@@ -13,22 +25,25 @@ import {
   tableBody,
 } from './refs/refs';
 import { timeArray, meetings, participants, daysArray } from './calendar-data';
-import template from './templates/alert-template.hbs';
-import selectOtionTemplate from './templates/select-options-template.hbs';
 import { alerts } from './alerts/alerts';
-const localStorageData = localStorageAPI.getParsedLocalStorageData('meetings');
+import template from './templates/alert-template.hbs';
+import selectOptionTemplate from './templates/select-options-template.hbs';
+
+//filling state array from LS
+const localStorageData = getParsedLocalStorageData('meetings');
 localStorageData?.map(meeting => meetings.push(meeting));
+
 let userId = 0;
 const NOTHIG = 'Nothing';
 
 //markup render
-utils.selectCreator(participants, participantSelectEl, selectOtionTemplate);
-utils.selectCreator(participants, formParticipantSelectEl, selectOtionTemplate);
-utils.selectCreator(timeArray, timeSelectEl, selectOtionTemplate);
-utils.selectCreator(daysArray, daySelectEl, selectOtionTemplate);
+selectCreator(participants, participantSelectEl, selectOptionTemplate);
+selectCreator(participants, formParticipantSelectEl, selectOptionTemplate);
+selectCreator(timeArray, timeSelectEl, selectOptionTemplate);
+selectCreator(daysArray, daySelectEl, selectOptionTemplate);
 createTable(userId);
 
-//participant change funktion
+//participant change function
 function participantSelectChange(e) {
   userId = parseInt(e.target.value);
   createTable(userId);
@@ -37,19 +52,15 @@ function participantSelectChange(e) {
 function createTable(userId) {
   let rows = '';
   timeArray.map((timeObj, index) => {
-    const availableMeetings = utils.getAvailableMeetings(index, meetings);
+    const availableMeetings = getAvailableMeetings(index, meetings);
     const days = new Array(5).fill('');
 
     if (userId === 0) {
       availableMeetings.map(meeting => {
-        utils.meetingDaysObjGeneration(meeting, days);
+        meetingDaysObjGeneration(meeting, days);
       });
     } else {
-      utils.getgetAvailableMeetingsByParticipant(
-        availableMeetings,
-        userId,
-        days,
-      );
+      getAvailableMeetingsByParticipant(availableMeetings, userId, days);
     }
 
     rows += `
@@ -82,7 +93,7 @@ function tdDelete(e) {
         }),
         1,
       );
-      localStorageAPI.setLocalStorageData('meetings', meetings);
+      setLocalStorageData('meetings', meetings);
       el.parentNode.classList.remove('table-success');
       el.parentNode.innerHTML = '';
     }
@@ -103,40 +114,38 @@ function validateForm() {
     form.insertAdjacentHTML('afterbegin', template(alerts.time));
     return false;
   }
-  if (utils.getSelectedMembers(formParticipantSelectEl).length === 0) {
+  if (getSelectedMembers(formParticipantSelectEl).length === 0) {
     form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
-  return true;
-}
-
-//on form submit function
-function onFormSubmit(e) {
-  e.preventDefault();
-  // custom modal closing
-  submitBtn.setAttribute('data-bs-dismiss', 'modal');
-
-  if (!validateForm()) {
-    submitBtn.removeAttribute('data-bs-dismiss');
-    return;
-  }
-  //cheking available time
   const isAvailableTime = meetings.filter(
     meeting =>
       meeting.info.day === parseInt(daySelectEl.value) &&
       meeting.info.time === parseInt(timeSelectEl.value),
   );
   if (isAvailableTime.length) {
-    submitBtn.removeAttribute('data-bs-dismiss');
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
+    return;
+  }
+  // submitBtn.setAttribute('data-bs-dismiss', 'modal');
+  return true;
+}
+
+//on form submit function
+function onFormSubmit(e) {
+  // e.preventDefault();
+
+  if (!validateForm()) {
+    e.preventDefault();
+    // submitBtn.removeAttribute('data-bs-dismiss');
     return;
   }
 
   //create event object
   const meeting = {
-    id: utils.generateMeetingId(meetings),
+    id: uuidv4(),
     title: inputEl.value,
-    participants: [...utils.getSelectedMembers(formParticipantSelectEl)],
+    participants: [...getSelectedMembers(formParticipantSelectEl)],
     info: {
       day: parseInt(daySelectEl.value),
       time: parseInt(timeSelectEl.value),
@@ -145,8 +154,8 @@ function onFormSubmit(e) {
 
   //pushing event object to events array and filling LS
   meetings.push(meeting);
-  localStorageAPI.setLocalStorageData('meetings', meetings);
-  utils.refreshForm(
+  setLocalStorageData('meetings', meetings);
+  refreshForm(
     inputEl,
     daySelectEl,
     timeSelectEl,
@@ -154,12 +163,13 @@ function onFormSubmit(e) {
     participantSelectEl,
   );
   createTable(0);
+  // customModalClose();
 }
 
 //on cancel form button click function
 function onCancelCreateEventBtn(e) {
   e.preventDefault();
-  utils.refreshForm(
+  refreshForm(
     inputEl,
     daySelectEl,
     timeSelectEl,
