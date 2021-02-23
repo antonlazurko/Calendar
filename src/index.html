@@ -14,6 +14,36 @@
   </head>
   <body>
     <div class="container">
+      <!--Auth Modal-->
+      <div class="auth-modal-backdrop">
+        <div class="auth-modal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Please authorise</h5>
+              </div>
+              <div class="modal-body">
+                <div class="col-md-3">
+                  <select
+                    form="form"
+                    class="form-select confirm-select"
+                    required
+                    autofocus
+                  >
+                    <option></option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary auth-btn__confirm">
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Auth Modal-->
       <div class="header">
         <p class="h1">Calendar</p>
         <div class="select-create">
@@ -38,7 +68,7 @@
           </button>
         </div>
       </div>
-      <table id="table" class="table table-bordered table-hover" border>
+      <table id="table" class="table table-bordered table-hover">
         <thead>
           <tr class="table-secondary">
             <th scope="col">Name</th>
