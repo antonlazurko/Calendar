@@ -1,6 +1,8 @@
 import 'bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import './sass/style.scss';
+import './sass/authModal.scss';
+
 import {
   refreshForm,
   getAvailableMeetings,
@@ -8,12 +10,12 @@ import {
   meetingDaysObjGeneration,
   getSelectedMembers,
   selectCreator,
-  customModalClose,
-} from './utils/utils';
+  selectMemberCreator,
+} from './utils/utils.js';
 import {
   getParsedLocalStorageData,
   setLocalStorageData,
-} from './services/localStorageAPI';
+} from './services/localStorageAPI.js';
 import {
   participantSelectEl,
   inputEl,
@@ -22,13 +24,25 @@ import {
   timeSelectEl,
   submitBtn,
   cancelCreateEventBtn,
+  createEventBtn,
   tableBody,
-} from './refs/refs';
-import { timeArray, meetings, participants, daysArray } from './calendar-data';
-import { alerts } from './alerts/alerts';
+  authModal,
+  confirmSelect,
+  authBtnConfirm,
+  modal,
+  authModalBackdrop,
+  tableRemoveBtn,
+} from './refs/refs.js';
+import {
+  timeArray,
+  meetings,
+  participants,
+  daysArray,
+} from './calendar-data.js';
+import { alerts } from './alerts/alerts.js';
+import authAlert from './templates/auth-alert.hbs';
 import template from './templates/alert-template.hbs';
 import selectOptionTemplate from './templates/select-options-template.hbs';
-
 //filling state array from LS
 const localStorageData = getParsedLocalStorageData('meetings');
 localStorageData?.map(meeting => meetings.push(meeting));
@@ -37,17 +51,22 @@ let userId = 0;
 const NOTHIG = 'Nothing';
 
 //markup render
-selectCreator(participants, participantSelectEl, selectOptionTemplate);
-selectCreator(participants, formParticipantSelectEl, selectOptionTemplate);
+selectMemberCreator(participants, confirmSelect, selectOptionTemplate);
+selectMemberCreator(participants, participantSelectEl, selectOptionTemplate);
+selectMemberCreator(
+  participants,
+  formParticipantSelectEl,
+  selectOptionTemplate,
+);
 selectCreator(timeArray, timeSelectEl, selectOptionTemplate);
 selectCreator(daysArray, daySelectEl, selectOptionTemplate);
 createTable(userId);
 
 //participant change function
-function participantSelectChange(e) {
+const participantSelectChange = e => {
   userId = parseInt(e.target.value);
   createTable(userId);
-}
+};
 //table render function
 function createTable(userId) {
   let rows = '';
@@ -79,7 +98,7 @@ function createTable(userId) {
 }
 
 //table data content delete function
-function tdDelete(e) {
+const tdDelete = e => {
   const el = e.target;
   if (el.tagName === 'BUTTON') {
     const result = window.confirm(
@@ -98,10 +117,10 @@ function tdDelete(e) {
       el.parentNode.innerHTML = '';
     }
   }
-}
+};
 
 //checking valid info function
-function validateForm() {
+const validateForm = () => {
   if (inputEl.value === '') {
     form.insertAdjacentHTML('afterbegin', template(alerts.input));
     return false;
@@ -129,10 +148,10 @@ function validateForm() {
   }
   // submitBtn.setAttribute('data-bs-dismiss', 'modal');
   return true;
-}
+};
 
 //on form submit function
-function onFormSubmit(e) {
+const onFormSubmit = e => {
   // e.preventDefault();
 
   if (!validateForm()) {
@@ -162,12 +181,12 @@ function onFormSubmit(e) {
     formParticipantSelectEl,
     participantSelectEl,
   );
-  createTable(0);
+  createTable();
   // customModalClose();
-}
+};
 
 //on cancel form button click function
-function onCancelCreateEventBtn(e) {
+const onCancelCreateEventBtn = e => {
   e.preventDefault();
   refreshForm(
     inputEl,
@@ -176,7 +195,29 @@ function onCancelCreateEventBtn(e) {
     formParticipantSelectEl,
     participantSelectEl,
   );
-}
+};
+
+//on auth-modal confirm function
+const onAuthConfirm = () => {
+  if (confirmSelect.value) {
+    createTable(0);
+    const participant = participants.find(participant => {
+      return participant.user.id === Number(confirmSelect.value);
+    });
+    if (!participant.isAdmin) {
+      createEventBtn.setAttribute('disabled', 'true');
+      const tableRemoveBtn = document.querySelectorAll('.btn-remove');
+      tableRemoveBtn.forEach(btn => btn.setAttribute('disabled', 'true'));
+    }
+    authModalBackdrop.remove();
+    return;
+  }
+  authModal.insertAdjacentHTML('afterbegin', authAlert(alerts.participants));
+  return;
+  // alert('Choose member');
+};
+
 participantSelectEl.addEventListener('change', participantSelectChange);
 submitBtn.addEventListener('click', onFormSubmit);
 cancelCreateEventBtn.addEventListener('click', onCancelCreateEventBtn);
+authBtnConfirm.addEventListener('click', onAuthConfirm);

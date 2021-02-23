@@ -58,32 +58,44 @@ export const timeArray = [
     name: '18:00',
   },
 ];
+export class User {
+  isAdmin = false;
+  constructor(user) {
+    this.user = user;
+  }
+}
+export class Admin extends User {
+  constructor(user) {
+    super(user);
+    this.isAdmin = true;
+  }
+}
 
 export const participants = [
-  {
+  new User({
     id: 1,
     name: 'John',
     meetings: [],
-  },
-  {
+  }),
+  new User({
     id: 2,
     name: 'Maria',
     meetings: [],
-  },
-  {
+  }),
+  new User({
     id: 3,
     name: 'David',
     meetings: [],
-  },
-  {
+  }),
+  new User({
     id: 4,
     name: 'Anna',
     meetings: [],
-  },
-  {
+  }),
+  new Admin({
     id: 5,
     name: 'BIG BOSS',
     meetings: [],
-  },
+  }),
 ];
 export const meetings = [];
