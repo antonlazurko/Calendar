@@ -11,6 +11,7 @@ import {
   getSelectedMembers,
   selectCreator,
   selectMemberCreator,
+  disableBtn,
 } from './utils/utils.js';
 import {
   getParsedLocalStorageData,
@@ -31,7 +32,6 @@ import {
   authBtnConfirm,
   modal,
   authModalBackdrop,
-  tableRemoveBtn,
 } from './refs/refs.js';
 import {
   timeArray,
@@ -205,9 +205,10 @@ const onAuthConfirm = () => {
       return participant.user.id === Number(confirmSelect.value);
     });
     if (!participant.isAdmin) {
-      createEventBtn.setAttribute('disabled', 'true');
+      disableBtn(createEventBtn);
+      // createEventBtn.setAttribute('disabled', 'true');
       const tableRemoveBtn = document.querySelectorAll('.btn-remove');
-      tableRemoveBtn.forEach(btn => btn.setAttribute('disabled', 'true'));
+      tableRemoveBtn.forEach(btn => disableBtn(btn));
     }
     authModalBackdrop.remove();
     return;

@@ -80,3 +80,8 @@ export const selectMemberCreator = (array, node, selectOtionTemplate) => {
     node.insertAdjacentHTML('beforeend', selectOtionTemplate(item.user));
   });
 };
+
+//hidden functional btns for 'users'
+export const disableBtn = btn => {
+  btn.setAttribute('disabled', 'true');
+};

@@ -1,3 +1,4 @@
+import { User, Admin } from './user';
 export const daysArray = [
   {
     id: 0,
@@ -58,18 +59,6 @@ export const timeArray = [
     name: '18:00',
   },
 ];
-export class User {
-  isAdmin = false;
-  constructor(user) {
-    this.user = user;
-  }
-}
-export class Admin extends User {
-  constructor(user) {
-    super(user);
-    this.isAdmin = true;
-  }
-}
 
 export const participants = [
   new User({
