@@ -13,6 +13,9 @@ import {
   selectMemberCreator,
   disableBtn,
 } from './utils/utils.js';
+import { getEvents, deleteEvent } from './services/API-service.js';
+getEvents();
+
 import {
   getParsedLocalStorageData,
   setLocalStorageData,
