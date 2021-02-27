@@ -1,3 +1,4 @@
+import JSON5 from 'json5';
 //form options clean function
 export const refreshForm = (
   inputEl,
@@ -16,7 +17,7 @@ export const refreshForm = (
 //get meetings for current time
 export const getAvailableMeetings = (index, array) => {
   return array.filter(meeting => {
-    return meeting.info.time === index;
+    return meeting.data.info.time === index;
   });
 };
 
@@ -27,16 +28,16 @@ export const getAvailableMeetingsByParticipant = (
   daysArray,
 ) => {
   meetingsArray.map(meeting => {
-    if (meeting.participants.includes(userId)) {
+    if (meeting.data.participants.includes(userId)) {
       meetingDaysObjGeneration(meeting, daysArray);
     }
   });
 };
 
 export const meetingDaysObjGeneration = (meetingObj, daysArr) => {
-  const day = meetingObj.info.day;
+  const day = meetingObj.data.info.day;
   daysArr[day] = {
-    name: `${meetingObj.title} <button type="button" class="btn-close btn-remove" data-id="${meetingObj.id}"></button>`,
+    name: `${meetingObj.data.title} <button type="button" class="btn-close btn-remove" data-id="${meetingObj.id}"></button>`,
     id: meetingObj.id,
     className: 'table-success ',
   };

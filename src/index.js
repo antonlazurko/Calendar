@@ -1,5 +1,7 @@
 import 'bootstrap';
 import { v4 as uuidv4 } from 'uuid';
+import JSON5 from 'json5';
+
 import './sass/style.scss';
 import './sass/authModal.scss';
 
@@ -13,13 +15,13 @@ import {
   selectMemberCreator,
   disableBtn,
 } from './utils/utils.js';
-import { getEvents, deleteEvent } from './services/API-service.js';
-getEvents();
 
-import {
-  getParsedLocalStorageData,
-  setLocalStorageData,
-} from './services/localStorageAPI.js';
+import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
+
+// import {
+//   getParsedLocalStorageData,
+//   setLocalStorageData,
+// } from './services/localStorageAPI.js';
 import {
   participantSelectEl,
   inputEl,
@@ -38,7 +40,7 @@ import {
 } from './refs/refs.js';
 import {
   timeArray,
-  meetings,
+  // meetings,
   participants,
   daysArray,
 } from './calendar-data.js';
@@ -46,9 +48,10 @@ import { alerts } from './alerts/alerts.js';
 import authAlert from './templates/auth-alert.hbs';
 import template from './templates/alert-template.hbs';
 import selectOptionTemplate from './templates/select-options-template.hbs';
-//filling state array from LS
-const localStorageData = getParsedLocalStorageData('meetings');
-localStorageData?.map(meeting => meetings.push(meeting));
+
+// filling state array from LS
+// const localStorageData = getParsedLocalStorageData('meetings');
+// localStorageData?.map(meeting => meetings.push(meeting));
 
 let userId = 0;
 const NOTHIG = 'Nothing';
@@ -71,7 +74,13 @@ const participantSelectChange = e => {
   createTable(userId);
 };
 //table render function
-function createTable(userId) {
+async function createTable(userId) {
+  let meetings = [];
+  await getEvents().then(res =>
+    res?.map(event =>
+      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
+    ),
+  );
   let rows = '';
   timeArray.map((timeObj, index) => {
     const availableMeetings = getAvailableMeetings(index, meetings);
@@ -101,7 +110,11 @@ function createTable(userId) {
 }
 
 //table data content delete function
-const tdDelete = e => {
+const tdDelete = async e => {
+  // let meetings = [];
+  // await getEvents().then(res =>
+  //   res.map(event => meetings.push(JSON5.parse(event.data))),
+  // );
   const el = e.target;
   if (el.tagName === 'BUTTON') {
     const result = window.confirm(
@@ -109,13 +122,14 @@ const tdDelete = e => {
     );
     if (result) {
       const meetingId = e.target.getAttribute('data-id');
-      meetings.splice(
-        meetings.findIndex(function (meeting) {
-          meeting.id === meetingId;
-        }),
-        1,
-      );
-      setLocalStorageData('meetings', meetings);
+      await deleteEvent(meetingId);
+      // meetings.splice(
+      //   meetings.findIndex(function (meeting) {
+      //     meeting.id === meetingId;
+      //   }),
+      //   1,
+      // );
+      // setLocalStorageData('meetings', meetings);
       el.parentNode.classList.remove('table-success');
       el.parentNode.innerHTML = '';
     }
@@ -123,7 +137,14 @@ const tdDelete = e => {
 };
 
 //checking valid info function
-const validateForm = () => {
+const validateForm = async () => {
+  let meetings = [];
+  await getEvents().then(res =>
+    res?.map(event =>
+      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
+    ),
+  );
+
   if (inputEl.value === '') {
     form.insertAdjacentHTML('afterbegin', template(alerts.input));
     return false;
@@ -142,20 +163,20 @@ const validateForm = () => {
   }
   const isAvailableTime = meetings.filter(
     meeting =>
-      meeting.info.day === parseInt(daySelectEl.value) &&
-      meeting.info.time === parseInt(timeSelectEl.value),
+      meeting.data.info.day === parseInt(daySelectEl.value) &&
+      meeting.data.info.time === parseInt(timeSelectEl.value),
   );
   if (isAvailableTime.length) {
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
-    return;
+    return false;
   }
   // submitBtn.setAttribute('data-bs-dismiss', 'modal');
   return true;
 };
 
 //on form submit function
-const onFormSubmit = e => {
-  // e.preventDefault();
+const onFormSubmit = async e => {
+  e.preventDefault();
 
   if (!validateForm()) {
     e.preventDefault();
@@ -165,18 +186,22 @@ const onFormSubmit = e => {
 
   //create event object
   const meeting = {
-    id: uuidv4(),
-    title: inputEl.value,
+    // id: uuidv4(),
+    title: `'${inputEl.value}'`,
     participants: [...getSelectedMembers(formParticipantSelectEl)],
     info: {
       day: parseInt(daySelectEl.value),
       time: parseInt(timeSelectEl.value),
     },
   };
+  const stringifyMeeting = JSON.stringify(meeting).replace(/"/g, '');
+  await addEvent(`{
+    "data":"${stringifyMeeting}"
+  }`);
 
   //pushing event object to events array and filling LS
-  meetings.push(meeting);
-  setLocalStorageData('meetings', meetings);
+  // meetings.push(meeting);
+  // setLocalStorageData('meetings', meetings);
   refreshForm(
     inputEl,
     daySelectEl,

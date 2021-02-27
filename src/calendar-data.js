@@ -1,4 +1,5 @@
 import { User, Admin } from './user';
+
 export const daysArray = [
   {
     id: 0,
