@@ -1,4 +1,3 @@
-import JSON5 from 'json5';
 //form options clean function
 export const refreshForm = (
   inputEl,
@@ -85,4 +84,38 @@ export const selectMemberCreator = (array, node, selectOtionTemplate) => {
 //hidden functional btns for 'users'
 export const disableBtn = btn => {
   btn.setAttribute('disabled', 'true');
+};
+
+//realized restrictions for autorized user
+export const userRestructionsHandler = (participant, createEventBtn) => {
+  createEventBtn.removeAttribute('disabled');
+
+  if (!participant.isAdmin) {
+    disableBtn(createEventBtn);
+    const tableRemoveBtn = document.querySelectorAll('.btn-remove');
+    tableRemoveBtn.forEach(btn => disableBtn(btn));
+  }
+};
+
+//markup render
+export const markupRender = (
+  participants,
+  confirmSelect,
+  timeArray,
+  daysArray,
+  formParticipantSelectEl,
+  participantSelectEl,
+  selectOptionTemplate,
+  timeSelectEl,
+  daySelectEl,
+) => {
+  selectMemberCreator(participants, confirmSelect, selectOptionTemplate);
+  selectMemberCreator(participants, participantSelectEl, selectOptionTemplate);
+  selectMemberCreator(
+    participants,
+    formParticipantSelectEl,
+    selectOptionTemplate,
+  );
+  selectCreator(timeArray, timeSelectEl, selectOptionTemplate);
+  selectCreator(daysArray, daySelectEl, selectOptionTemplate);
 };

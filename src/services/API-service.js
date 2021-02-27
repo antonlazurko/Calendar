@@ -15,12 +15,19 @@ export const getEvents = async () => {
 };
 
 export const addEvent = async body => {
-  axios
-    .post(`${URL}${SYSTEM}/${ENTITY}`, body)
-    .then(console.log)
-    .catch(console.log);
+  try {
+    const { status } = await axios.post(`${URL}${SYSTEM}/${ENTITY}`, body);
+    return status;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const deleteEvent = async id => {
-  axios.delete(`${URL}${SYSTEM}/${ENTITY}/${id}`);
+  try {
+    const { status } = await axios.delete(`${URL}${SYSTEM}/${ENTITY}/${id}`);
+    return status;
+  } catch (e) {
+    console.log(e);
+  }
 };

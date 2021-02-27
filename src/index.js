@@ -13,6 +13,8 @@ import {
   getSelectedMembers,
   selectCreator,
   selectMemberCreator,
+  userRestructionsHandler,
+  markupRender,
   disableBtn,
 } from './utils/utils.js';
 
@@ -55,17 +57,20 @@ import selectOptionTemplate from './templates/select-options-template.hbs';
 
 let userId = 0;
 const NOTHIG = 'Nothing';
+let participant = {};
 
 //markup render
-selectMemberCreator(participants, confirmSelect, selectOptionTemplate);
-selectMemberCreator(participants, participantSelectEl, selectOptionTemplate);
-selectMemberCreator(
+markupRender(
   participants,
+  confirmSelect,
+  timeArray,
+  daysArray,
   formParticipantSelectEl,
+  participantSelectEl,
   selectOptionTemplate,
+  timeSelectEl,
+  daySelectEl,
 );
-selectCreator(timeArray, timeSelectEl, selectOptionTemplate);
-selectCreator(daysArray, daySelectEl, selectOptionTemplate);
 createTable(userId);
 
 //participant change function
@@ -107,14 +112,11 @@ async function createTable(userId) {
   tableBody.innerHTML = rows;
 
   tableBody.addEventListener('click', tdDelete);
+  userRestructionsHandler(participant, createEventBtn);
 }
 
 //table data content delete function
 const tdDelete = async e => {
-  // let meetings = [];
-  // await getEvents().then(res =>
-  //   res.map(event => meetings.push(JSON5.parse(event.data))),
-  // );
   const el = e.target;
   if (el.tagName === 'BUTTON') {
     const result = window.confirm(
@@ -122,7 +124,13 @@ const tdDelete = async e => {
     );
     if (result) {
       const meetingId = e.target.getAttribute('data-id');
-      await deleteEvent(meetingId);
+      await deleteEvent(meetingId).then(status => {
+        if (status === 204) {
+          el.parentNode.classList.remove('table-success');
+          el.parentNode.innerHTML = '';
+          alert('Successful delete');
+        }
+      });
       // meetings.splice(
       //   meetings.findIndex(function (meeting) {
       //     meeting.id === meetingId;
@@ -130,21 +138,14 @@ const tdDelete = async e => {
       //   1,
       // );
       // setLocalStorageData('meetings', meetings);
-      el.parentNode.classList.remove('table-success');
-      el.parentNode.innerHTML = '';
+      // el.parentNode.classList.remove('table-success');
+      // el.parentNode.innerHTML = '';
     }
   }
 };
 
-//checking valid info function
+//checking valid data function
 const validateForm = async () => {
-  let meetings = [];
-  await getEvents().then(res =>
-    res?.map(event =>
-      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
-    ),
-  );
-
   if (inputEl.value === '') {
     form.insertAdjacentHTML('afterbegin', template(alerts.input));
     return false;
@@ -161,11 +162,19 @@ const validateForm = async () => {
     form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
+  let meetings = [];
+  await getEvents().then(res =>
+    res?.map(event =>
+      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
+    ),
+  );
+
   const isAvailableTime = meetings.filter(
     meeting =>
       meeting.data.info.day === parseInt(daySelectEl.value) &&
       meeting.data.info.time === parseInt(timeSelectEl.value),
   );
+  console.log(isAvailableTime);
   if (isAvailableTime.length) {
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
     return false;
@@ -175,7 +184,7 @@ const validateForm = async () => {
 };
 
 //on form submit function
-const onFormSubmit = async e => {
+const onFormSubmit = e => {
   e.preventDefault();
 
   if (!validateForm()) {
@@ -195,9 +204,9 @@ const onFormSubmit = async e => {
     },
   };
   const stringifyMeeting = JSON.stringify(meeting).replace(/"/g, '');
-  await addEvent(`{
+  addEvent(`{
     "data":"${stringifyMeeting}"
-  }`);
+  }`).then(console.log);
 
   //pushing event object to events array and filling LS
   // meetings.push(meeting);
@@ -209,7 +218,7 @@ const onFormSubmit = async e => {
     formParticipantSelectEl,
     participantSelectEl,
   );
-  createTable();
+  createTable(0);
   // customModalClose();
 };
 
@@ -228,22 +237,16 @@ const onCancelCreateEventBtn = e => {
 //on auth-modal confirm function
 const onAuthConfirm = () => {
   if (confirmSelect.value) {
-    createTable(0);
-    const participant = participants.find(participant => {
+    participant = participants.find(participant => {
       return participant.user.id === Number(confirmSelect.value);
     });
-    if (!participant.isAdmin) {
-      disableBtn(createEventBtn);
-      // createEventBtn.setAttribute('disabled', 'true');
-      const tableRemoveBtn = document.querySelectorAll('.btn-remove');
-      tableRemoveBtn.forEach(btn => disableBtn(btn));
-    }
+    createTable(0);
+    userRestructionsHandler(participant, createEventBtn);
     authModalBackdrop.remove();
     return;
   }
   authModal.insertAdjacentHTML('afterbegin', authAlert(alerts.participants));
   return;
-  // alert('Choose member');
 };
 
 participantSelectEl.addEventListener('change', participantSelectChange);
