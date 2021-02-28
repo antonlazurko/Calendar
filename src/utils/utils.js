@@ -54,17 +54,15 @@ export const getSelectedMembers = userSelectEl => {
   }
   return values;
 };
-
-export const customModalClose = () => {
-  const modal = document.querySelector('.modal');
-  modal.classList.remove('show');
-  modal.setAttribute('aria-hidden', 'true');
-  modal.setAttribute('style', 'display: none;');
-  modal.removeAttribute('aria-modal');
-  modal.removeAttribute('role');
-  document.body.classList.remove('modal-open');
-  const backdrop = document.querySelector('.modal-backdrop');
-  document.body.removeChild(backdrop);
+export const modalToggle = () => {
+  const createModal = document.querySelector('.create-modal-backdrop');
+  createModal.classList.toggle('create-modal-close');
+};
+export const onEscPress = event => {
+  if (event.code === 'Escape') {
+    modalToggle();
+    window.removeEventListener('keydown', onEscPress);
+  }
 };
 
 //select options render function

@@ -43,7 +43,8 @@
           </div>
         </div>
       </div>
-      <!--Auth Modal-->
+      <!--Auth Modal end-->
+      <!--HEADER-->
       <div class="header">
         <p class="h1">Calendar</p>
         <div class="select-create">
@@ -58,16 +59,13 @@
             </select>
           </div>
           <!-- Button trigger modal -->
-          <button
-            type="button"
-            class="btn btn-light createEventBtn"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
+          <button type="button" class="btn btn-light createEventBtn">
             New event+
           </button>
         </div>
       </div>
+      <!--HEADER end-->
+      <!--TABLE-->
       <table id="table" class="table table-bordered table-hover">
         <thead>
           <tr class="table-secondary">
@@ -81,102 +79,99 @@
         </thead>
         <tbody></tbody>
       </table>
+      <!--TABLE end-->
 
-      <!-- Modal -->
-      <div
-        class="modal fade"
-        id="exampleModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Create event</h5>
-            </div>
-            <div class="modal-body">
-              <form id="form" class="row g-3 needs-validation" novalidate>
-                <div class="col-md-4">
-                  <label for="validationCustom01" class="form-label"
-                    >Name of event
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control input"
-                    id="validationCustom01"
-                    required
-                    form="form"
-                    name="input"
-                    type="text"
-                  />
-                </div>
-                <div class="col-md-3">
-                  <label for="validationCustom04" class="form-label"
-                    >Members</label
-                  >
-                  <select
-                    form="form"
-                    class="form-select form-user-select"
-                    id="validationCustom04"
-                    required
-                    multiple
-                  ></select>
-                </div>
-                <div class="col-md-3">
-                  <label for="validationCustom04" class="form-label"
-                    >Event day</label
-                  >
-                  <select
-                    form="form"
-                    class="form-select day-select"
-                    id="validationCustom04"
-                    required
-                  >
-                    <option selected disabled value="Nothing">
-                      Choose day
-                    </option>
-                  </select>
-                </div>
-                <div class="col-md-3">
-                  <label for="validationCustom04" class="form-label"
-                    >Event time</label
-                  >
-                  <select
-                    form="form"
-                    class="form-select time-select"
-                    id="validationCustom04"
-                    required
-                  >
-                    <option selected disabled value="Nothing">
-                      Choose time
-                    </option>
-                  </select>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                form="form"
-                class="btn btn-light cancel-btn"
-                data-bs-dismiss="modal"
-                aria-label="Cancel"
-              >
-                Cancel
-              </button>
-              <button
-                form="form"
-                type="submit"
-                class="btn btn-light submit-btn"
-                aria-label="Create"
-              >
-                Create
-              </button>
+      <!-- Create-Modal -->
+      <div class="create-modal-backdrop create-modal-close">
+        <div class="create-modal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Create event</h5>
+              </div>
+              <div class="modal-body">
+                <form id="form" class="row g-3 needs-validation" novalidate>
+                  <div class="col-md-4">
+                    <label for="validationCustom01" class="form-label"
+                      >Name of event
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control input"
+                      id="validationCustom01"
+                      required
+                      form="form"
+                      name="input"
+                      type="text"
+                    />
+                  </div>
+                  <div class="col-md-3">
+                    <label for="validationCustom04" class="form-label"
+                      >Members</label
+                    >
+                    <select
+                      form="form"
+                      class="form-select form-user-select"
+                      id="validationCustom04"
+                      required
+                      multiple
+                    ></select>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="validationCustom04" class="form-label"
+                      >Event day</label
+                    >
+                    <select
+                      form="form"
+                      class="form-select day-select"
+                      id="validationCustom04"
+                      required
+                    >
+                      <option selected disabled value="Nothing">
+                        Choose day
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="validationCustom04" class="form-label"
+                      >Event time</label
+                    >
+                    <select
+                      form="form"
+                      class="form-select time-select"
+                      id="validationCustom04"
+                      required
+                    >
+                      <option selected disabled value="Nothing">
+                        Choose time
+                      </option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  form="form"
+                  class="btn btn-light cancel-btn"
+                  aria-label="Cancel"
+                >
+                  Cancel
+                </button>
+                <button
+                  form="form"
+                  type="submit"
+                  class="btn btn-light submit-btn"
+                  aria-label="Create"
+                >
+                  Create
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- Create-Modal end -->
     </div>
   </body>
 </html>

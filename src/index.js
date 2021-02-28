@@ -1,5 +1,4 @@
 import 'bootstrap';
-import { v4 as uuidv4 } from 'uuid';
 import JSON5 from 'json5';
 
 import './sass/style.scss';
@@ -11,11 +10,10 @@ import {
   getAvailableMeetingsByParticipant,
   meetingDaysObjGeneration,
   getSelectedMembers,
-  selectCreator,
-  selectMemberCreator,
   userRestructionsHandler,
   markupRender,
-  disableBtn,
+  modalToggle,
+  onEscPress,
 } from './utils/utils.js';
 
 import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
@@ -24,6 +22,7 @@ import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
 //   getParsedLocalStorageData,
 //   setLocalStorageData,
 // } from './services/localStorageAPI.js';
+
 import {
   participantSelectEl,
   inputEl,
@@ -37,9 +36,9 @@ import {
   authModal,
   confirmSelect,
   authBtnConfirm,
-  modal,
   authModalBackdrop,
 } from './refs/refs.js';
+
 import {
   timeArray,
   // meetings,
@@ -128,7 +127,7 @@ const tdDelete = async e => {
         if (status === 204) {
           el.parentNode.classList.remove('table-success');
           el.parentNode.innerHTML = '';
-          alert('Successful delete');
+          alert('Event successfuly delete');
         }
       });
       // meetings.splice(
@@ -174,7 +173,6 @@ const validateForm = async () => {
       meeting.data.info.day === parseInt(daySelectEl.value) &&
       meeting.data.info.time === parseInt(timeSelectEl.value),
   );
-  console.log(isAvailableTime);
   if (isAvailableTime.length) {
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
     return false;
@@ -184,18 +182,15 @@ const validateForm = async () => {
 };
 
 //on form submit function
-const onFormSubmit = e => {
+const onFormSubmit = async e => {
   e.preventDefault();
 
-  if (!validateForm()) {
-    e.preventDefault();
-    // submitBtn.removeAttribute('data-bs-dismiss');
+  if (!(await validateForm())) {
     return;
   }
 
   //create event object
   const meeting = {
-    // id: uuidv4(),
     title: `'${inputEl.value}'`,
     participants: [...getSelectedMembers(formParticipantSelectEl)],
     info: {
@@ -204,13 +199,18 @@ const onFormSubmit = e => {
     },
   };
   const stringifyMeeting = JSON.stringify(meeting).replace(/"/g, '');
-  addEvent(`{
+  await addEvent(`{
     "data":"${stringifyMeeting}"
-  }`).then(console.log);
+  }`).then(status => {
+    if (status !== 200) {
+      alert('Event is not create');
+    }
+  });
 
   //pushing event object to events array and filling LS
   // meetings.push(meeting);
   // setLocalStorageData('meetings', meetings);
+
   refreshForm(
     inputEl,
     daySelectEl,
@@ -219,7 +219,7 @@ const onFormSubmit = e => {
     participantSelectEl,
   );
   createTable(0);
-  // customModalClose();
+  modalToggle();
 };
 
 //on cancel form button click function
@@ -232,6 +232,7 @@ const onCancelCreateEventBtn = e => {
     formParticipantSelectEl,
     participantSelectEl,
   );
+  modalToggle();
 };
 
 //on auth-modal confirm function
@@ -243,6 +244,11 @@ const onAuthConfirm = () => {
     createTable(0);
     userRestructionsHandler(participant, createEventBtn);
     authModalBackdrop.remove();
+    createEventBtn.addEventListener('click', () => {
+      modalToggle();
+      window.addEventListener('keydown', onEscPress);
+    });
+
     return;
   }
   authModal.insertAdjacentHTML('afterbegin', authAlert(alerts.participants));
