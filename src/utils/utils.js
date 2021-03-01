@@ -16,7 +16,7 @@ export const refreshForm = (
 //get meetings for current time
 export const getAvailableMeetings = (index, array) => {
   return array.filter(meeting => {
-    return meeting.info.time === index;
+    return meeting.data.info.time === index;
   });
 };
 
@@ -27,16 +27,16 @@ export const getAvailableMeetingsByParticipant = (
   daysArray,
 ) => {
   meetingsArray.map(meeting => {
-    if (meeting.participants.includes(userId)) {
+    if (meeting.data.participants.includes(userId)) {
       meetingDaysObjGeneration(meeting, daysArray);
     }
   });
 };
 
 export const meetingDaysObjGeneration = (meetingObj, daysArr) => {
-  const day = meetingObj.info.day;
+  const day = meetingObj.data.info.day;
   daysArr[day] = {
-    name: `${meetingObj.title} <button type="button" class="btn-close btn-remove" data-id="${meetingObj.id}"></button>`,
+    name: `${meetingObj.data.title} <button type="button" class="btn-close btn-remove" data-id="${meetingObj.id}"></button>`,
     id: meetingObj.id,
     className: 'table-success ',
   };
@@ -54,17 +54,15 @@ export const getSelectedMembers = userSelectEl => {
   }
   return values;
 };
-
-export const customModalClose = () => {
-  const modal = document.querySelector('.modal');
-  modal.classList.remove('show');
-  modal.setAttribute('aria-hidden', 'true');
-  modal.setAttribute('style', 'display: none;');
-  modal.removeAttribute('aria-modal');
-  modal.removeAttribute('role');
-  document.body.classList.remove('modal-open');
-  const backdrop = document.querySelector('.modal-backdrop');
-  document.body.removeChild(backdrop);
+export const modalToggle = () => {
+  const createModal = document.querySelector('.create-modal-backdrop');
+  createModal.classList.toggle('create-modal-close');
+};
+export const onEscPress = event => {
+  if (event.code === 'Escape') {
+    modalToggle();
+    window.removeEventListener('keydown', onEscPress);
+  }
 };
 
 //select options render function
@@ -84,4 +82,38 @@ export const selectMemberCreator = (array, node, selectOtionTemplate) => {
 //hidden functional btns for 'users'
 export const disableBtn = btn => {
   btn.setAttribute('disabled', 'true');
+};
+
+//realized restrictions for autorized user
+export const userRestructionsHandler = (participant, createEventBtn) => {
+  createEventBtn.removeAttribute('disabled');
+
+  if (!participant.isAdmin) {
+    disableBtn(createEventBtn);
+    const tableRemoveBtn = document.querySelectorAll('.btn-remove');
+    tableRemoveBtn.forEach(btn => disableBtn(btn));
+  }
+};
+
+//markup render
+export const markupRender = (
+  participants,
+  confirmSelect,
+  timeArray,
+  daysArray,
+  formParticipantSelectEl,
+  participantSelectEl,
+  selectOptionTemplate,
+  timeSelectEl,
+  daySelectEl,
+) => {
+  selectMemberCreator(participants, confirmSelect, selectOptionTemplate);
+  selectMemberCreator(participants, participantSelectEl, selectOptionTemplate);
+  selectMemberCreator(
+    participants,
+    formParticipantSelectEl,
+    selectOptionTemplate,
+  );
+  selectCreator(timeArray, timeSelectEl, selectOptionTemplate);
+  selectCreator(daysArray, daySelectEl, selectOptionTemplate);
 };

@@ -1,5 +1,6 @@
 import 'bootstrap';
-import { v4 as uuidv4 } from 'uuid';
+import JSON5 from 'json5';
+
 import './sass/style.scss';
 import './sass/authModal.scss';
 
@@ -9,14 +10,19 @@ import {
   getAvailableMeetingsByParticipant,
   meetingDaysObjGeneration,
   getSelectedMembers,
-  selectCreator,
-  selectMemberCreator,
-  disableBtn,
+  userRestructionsHandler,
+  markupRender,
+  modalToggle,
+  onEscPress,
 } from './utils/utils.js';
-import {
-  getParsedLocalStorageData,
-  setLocalStorageData,
-} from './services/localStorageAPI.js';
+
+import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
+
+// import {
+//   getParsedLocalStorageData,
+//   setLocalStorageData,
+// } from './services/localStorageAPI.js';
+
 import {
   participantSelectEl,
   inputEl,
@@ -30,12 +36,12 @@ import {
   authModal,
   confirmSelect,
   authBtnConfirm,
-  modal,
   authModalBackdrop,
 } from './refs/refs.js';
+
 import {
   timeArray,
-  meetings,
+  // meetings,
   participants,
   daysArray,
 } from './calendar-data.js';
@@ -43,23 +49,27 @@ import { alerts } from './alerts/alerts.js';
 import authAlert from './templates/auth-alert.hbs';
 import template from './templates/alert-template.hbs';
 import selectOptionTemplate from './templates/select-options-template.hbs';
-//filling state array from LS
-const localStorageData = getParsedLocalStorageData('meetings');
-localStorageData?.map(meeting => meetings.push(meeting));
+
+// filling state array from LS
+// const localStorageData = getParsedLocalStorageData('meetings');
+// localStorageData?.map(meeting => meetings.push(meeting));
 
 let userId = 0;
 const NOTHIG = 'Nothing';
+let participant = {};
 
 //markup render
-selectMemberCreator(participants, confirmSelect, selectOptionTemplate);
-selectMemberCreator(participants, participantSelectEl, selectOptionTemplate);
-selectMemberCreator(
+markupRender(
   participants,
+  confirmSelect,
+  timeArray,
+  daysArray,
   formParticipantSelectEl,
+  participantSelectEl,
   selectOptionTemplate,
+  timeSelectEl,
+  daySelectEl,
 );
-selectCreator(timeArray, timeSelectEl, selectOptionTemplate);
-selectCreator(daysArray, daySelectEl, selectOptionTemplate);
 createTable(userId);
 
 //participant change function
@@ -68,7 +78,13 @@ const participantSelectChange = e => {
   createTable(userId);
 };
 //table render function
-function createTable(userId) {
+async function createTable(userId) {
+  let meetings = [];
+  await getEvents().then(res =>
+    res?.map(event =>
+      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
+    ),
+  );
   let rows = '';
   timeArray.map((timeObj, index) => {
     const availableMeetings = getAvailableMeetings(index, meetings);
@@ -95,10 +111,11 @@ function createTable(userId) {
   tableBody.innerHTML = rows;
 
   tableBody.addEventListener('click', tdDelete);
+  userRestructionsHandler(participant, createEventBtn);
 }
 
 //table data content delete function
-const tdDelete = e => {
+const tdDelete = async e => {
   const el = e.target;
   if (el.tagName === 'BUTTON') {
     const result = window.confirm(
@@ -106,21 +123,28 @@ const tdDelete = e => {
     );
     if (result) {
       const meetingId = e.target.getAttribute('data-id');
-      meetings.splice(
-        meetings.findIndex(function (meeting) {
-          meeting.id === meetingId;
-        }),
-        1,
-      );
-      setLocalStorageData('meetings', meetings);
-      el.parentNode.classList.remove('table-success');
-      el.parentNode.innerHTML = '';
+      await deleteEvent(meetingId).then(status => {
+        if (status === 204) {
+          el.parentNode.classList.remove('table-success');
+          el.parentNode.innerHTML = '';
+          alert('Event successfuly delete');
+        }
+      });
+      // meetings.splice(
+      //   meetings.findIndex(function (meeting) {
+      //     meeting.id === meetingId;
+      //   }),
+      //   1,
+      // );
+      // setLocalStorageData('meetings', meetings);
+      // el.parentNode.classList.remove('table-success');
+      // el.parentNode.innerHTML = '';
     }
   }
 };
 
-//checking valid info function
-const validateForm = () => {
+//checking valid data function
+const validateForm = async () => {
   if (inputEl.value === '') {
     form.insertAdjacentHTML('afterbegin', template(alerts.input));
     return false;
@@ -137,43 +161,56 @@ const validateForm = () => {
     form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
+  let meetings = [];
+  await getEvents().then(res =>
+    res?.map(event =>
+      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
+    ),
+  );
+
   const isAvailableTime = meetings.filter(
     meeting =>
-      meeting.info.day === parseInt(daySelectEl.value) &&
-      meeting.info.time === parseInt(timeSelectEl.value),
+      meeting.data.info.day === parseInt(daySelectEl.value) &&
+      meeting.data.info.time === parseInt(timeSelectEl.value),
   );
   if (isAvailableTime.length) {
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
-    return;
+    return false;
   }
   // submitBtn.setAttribute('data-bs-dismiss', 'modal');
   return true;
 };
 
 //on form submit function
-const onFormSubmit = e => {
-  // e.preventDefault();
+const onFormSubmit = async e => {
+  e.preventDefault();
 
-  if (!validateForm()) {
-    e.preventDefault();
-    // submitBtn.removeAttribute('data-bs-dismiss');
+  if (!(await validateForm())) {
     return;
   }
 
   //create event object
   const meeting = {
-    id: uuidv4(),
-    title: inputEl.value,
+    title: `'${inputEl.value}'`,
     participants: [...getSelectedMembers(formParticipantSelectEl)],
     info: {
       day: parseInt(daySelectEl.value),
       time: parseInt(timeSelectEl.value),
     },
   };
+  const stringifyMeeting = JSON.stringify(meeting).replace(/"/g, '');
+  await addEvent(`{
+    "data":"${stringifyMeeting}"
+  }`).then(status => {
+    if (status !== 200) {
+      alert('Event is not create');
+    }
+  });
 
   //pushing event object to events array and filling LS
-  meetings.push(meeting);
-  setLocalStorageData('meetings', meetings);
+  // meetings.push(meeting);
+  // setLocalStorageData('meetings', meetings);
+
   refreshForm(
     inputEl,
     daySelectEl,
@@ -181,8 +218,8 @@ const onFormSubmit = e => {
     formParticipantSelectEl,
     participantSelectEl,
   );
-  createTable();
-  // customModalClose();
+  createTable(0);
+  modalToggle();
 };
 
 //on cancel form button click function
@@ -195,27 +232,27 @@ const onCancelCreateEventBtn = e => {
     formParticipantSelectEl,
     participantSelectEl,
   );
+  modalToggle();
 };
 
 //on auth-modal confirm function
 const onAuthConfirm = () => {
   if (confirmSelect.value) {
-    createTable(0);
-    const participant = participants.find(participant => {
+    participant = participants.find(participant => {
       return participant.user.id === Number(confirmSelect.value);
     });
-    if (!participant.isAdmin) {
-      disableBtn(createEventBtn);
-      // createEventBtn.setAttribute('disabled', 'true');
-      const tableRemoveBtn = document.querySelectorAll('.btn-remove');
-      tableRemoveBtn.forEach(btn => disableBtn(btn));
-    }
+    createTable(0);
+    userRestructionsHandler(participant, createEventBtn);
     authModalBackdrop.remove();
+    createEventBtn.addEventListener('click', () => {
+      modalToggle();
+      window.addEventListener('keydown', onEscPress);
+    });
+
     return;
   }
   authModal.insertAdjacentHTML('afterbegin', authAlert(alerts.participants));
   return;
-  // alert('Choose member');
 };
 
 participantSelectEl.addEventListener('change', participantSelectChange);

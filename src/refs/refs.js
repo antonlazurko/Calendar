@@ -15,3 +15,4 @@ export const confirmSelect = document.querySelector('.confirm-select');
 export const authBtnConfirm = document.querySelector('.auth-btn__confirm');
 export const modal = document.querySelector('.modal');
 export const authModalBackdrop = document.querySelector('.auth-modal-backdrop');
+export const createModal = document.querySelector('.create-modal-backdrop');

@@ -1,4 +1,5 @@
 import { User, Admin } from './user';
+
 export const daysArray = [
   {
     id: 0,
@@ -87,4 +88,4 @@ export const participants = [
     meetings: [],
   }),
 ];
-export const meetings = [];
+// export const meetings = [];
