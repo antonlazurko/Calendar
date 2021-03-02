@@ -17,6 +17,7 @@ import {
 } from './utils/utils.js';
 
 import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
+import { eventsSingleton } from './services/API-services-Singleton';
 
 import {
   participantSelectEl,
@@ -39,7 +40,6 @@ import { alerts } from './alerts/alerts.js';
 import authAlert from './templates/auth-alert.hbs';
 import template from './templates/alert-template.hbs';
 import selectOptionTemplate from './templates/select-options-template.hbs';
-import { eventsSingleton } from './services/API-services-Singleton';
 
 let userId = 0;
 const NOTHIG = 'Nothing';
@@ -67,7 +67,6 @@ const participantSelectChange = e => {
 //table render function
 async function createTable(userId) {
   let meetings = [];
-
   // using singleton pattern
   await eventsSingleton.getEvent().then(res =>
     // await getEvents().then(res =>

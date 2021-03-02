@@ -5,17 +5,25 @@ const SYSTEM = `anton_lazurko`;
 const ENTITY = `events`;
 const URL = 'http://158.101.166.74:8080/api/data/';
 
+let instance = null;
+
 class EventAPI {
   constructor() {
+    if (!instance) {
+      instance = this;
+    }
     this.data = [];
     this.error = {};
     this.status = '';
+
+    return instance;
   }
   async getEvent() {
     try {
       const { data, status } = await axios.get(`${URL}${SYSTEM}/${ENTITY}`);
       this.data = data;
-      return data;
+      this.status = status;
+      return this.data;
     } catch (error) {
       this.error = error;
       console.log(this.error);
@@ -26,6 +34,7 @@ class EventAPI {
     try {
       const { status } = await axios.post(`${URL}${SYSTEM}/${ENTITY}`, body);
       this.status = status;
+      console.log(this.status);
       return status;
     } catch (e) {
       this.error = error;
@@ -37,6 +46,7 @@ class EventAPI {
     try {
       const { status } = await axios.delete(`${URL}${SYSTEM}/${ENTITY}/${id}`);
       this.status = status;
+      console.log(this.status);
       return status;
     } catch (e) {
       this.error = error;
