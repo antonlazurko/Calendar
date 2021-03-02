@@ -18,11 +18,6 @@ import {
 
 import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
 
-// import {
-//   getParsedLocalStorageData,
-//   setLocalStorageData,
-// } from './services/localStorageAPI.js';
-
 import {
   participantSelectEl,
   inputEl,
@@ -39,20 +34,12 @@ import {
   authModalBackdrop,
 } from './refs/refs.js';
 
-import {
-  timeArray,
-  // meetings,
-  participants,
-  daysArray,
-} from './calendar-data.js';
+import { timeArray, participants, daysArray } from './calendar-data.js';
 import { alerts } from './alerts/alerts.js';
 import authAlert from './templates/auth-alert.hbs';
 import template from './templates/alert-template.hbs';
 import selectOptionTemplate from './templates/select-options-template.hbs';
-
-// filling state array from LS
-// const localStorageData = getParsedLocalStorageData('meetings');
-// localStorageData?.map(meeting => meetings.push(meeting));
+import { eventsSingleton } from './services/API-services-Singleton';
 
 let userId = 0;
 const NOTHIG = 'Nothing';
@@ -80,7 +67,10 @@ const participantSelectChange = e => {
 //table render function
 async function createTable(userId) {
   let meetings = [];
-  await getEvents().then(res =>
+
+  // using singleton pattern
+  await eventsSingleton.getEvent().then(res =>
+    // await getEvents().then(res =>
     res?.map(event =>
       meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
     ),
@@ -123,22 +113,16 @@ const tdDelete = async e => {
     );
     if (result) {
       const meetingId = e.target.getAttribute('data-id');
-      await deleteEvent(meetingId).then(status => {
+      // await deleteEvent(meetingId).then(status => {
+
+      //using singletone pattern
+      await eventsSingleton.deleteEvent(meetingId).then(status => {
         if (status === 204) {
           el.parentNode.classList.remove('table-success');
           el.parentNode.innerHTML = '';
           alert('Event successfuly delete');
         }
       });
-      // meetings.splice(
-      //   meetings.findIndex(function (meeting) {
-      //     meeting.id === meetingId;
-      //   }),
-      //   1,
-      // );
-      // setLocalStorageData('meetings', meetings);
-      // el.parentNode.classList.remove('table-success');
-      // el.parentNode.innerHTML = '';
     }
   }
 };
@@ -162,11 +146,16 @@ const validateForm = async () => {
     return false;
   }
   let meetings = [];
-  await getEvents().then(res =>
-    res?.map(event =>
-      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
-    ),
-  );
+  // await getEvents().then(res =>
+
+  //using singletone pattern
+  await eventsSingleton
+    .getEvent()
+    .then(res =>
+      res?.map(event =>
+        meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
+      ),
+    );
 
   const isAvailableTime = meetings.filter(
     meeting =>
@@ -177,7 +166,6 @@ const validateForm = async () => {
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
     return false;
   }
-  // submitBtn.setAttribute('data-bs-dismiss', 'modal');
   return true;
 };
 
@@ -199,17 +187,21 @@ const onFormSubmit = async e => {
     },
   };
   const stringifyMeeting = JSON.stringify(meeting).replace(/"/g, '');
-  await addEvent(`{
-    "data":"${stringifyMeeting}"
-  }`).then(status => {
-    if (status !== 200) {
-      alert('Event is not create');
-    }
-  });
 
-  //pushing event object to events array and filling LS
-  // meetings.push(meeting);
-  // setLocalStorageData('meetings', meetings);
+  // await addEvent(`{
+
+  //using singletone pattern
+  await eventsSingleton
+    .addEvent(
+      `{
+    "data":"${stringifyMeeting}"
+  }`,
+    )
+    .then(status => {
+      if (status !== 200) {
+        alert('Event is not create');
+      }
+    });
 
   refreshForm(
     inputEl,

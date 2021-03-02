@@ -88,4 +88,3 @@ export const participants = [
     meetings: [],
   }),
 ];
-// export const meetings = [];
