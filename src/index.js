@@ -18,7 +18,7 @@ import {
 
 import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
 import { eventsSingleton } from './services/API-services-Singleton';
-
+import ErrorDecorator from './services/API-error-Decorator';
 import {
   participantSelectEl,
   inputEl,
@@ -190,17 +190,11 @@ const onFormSubmit = async e => {
   // await addEvent(`{
 
   //using singletone pattern
-  await eventsSingleton
-    .addEvent(
-      `{
+  await eventsSingleton.addEvent(
+    `{
     "data":"${stringifyMeeting}"
   }`,
-    )
-    .then(status => {
-      if (status !== 200) {
-        alert('Event is not create');
-      }
-    });
+  );
 
   refreshForm(
     inputEl,

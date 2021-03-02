@@ -1,13 +1,19 @@
-import eventsSingleton from './API-services-Singleton';
-class ErrorDecorator {
-  constructor(eventsSingleton) {
-    this.eventsSingleton = eventsSingleton;
-  }
-  getEventDecorator() {
-    this.eventsSingleton();
-    if (this.eventsSingleton.status === 200) {
-      return this.eventsSingleton.data;
+import errorTemplate from '../templates/error-template.hbs';
+function ErrorDecorator(target, key, descriptor) {
+  const originalMethod = descriptor.value;
+
+  descriptor.value = async function (...args) {
+    try {
+      return await originalMethod.apply(this, args);
+    } catch (error) {
+      document.body.insertAdjacentHTML(
+        'afterbegin',
+        errorTemplate({ message: error.message }),
+      );
     }
-  }
+  };
+
+  return descriptor;
 }
-export const errorDecorator = new ErrorDecorator();
+
+export default ErrorDecorator;

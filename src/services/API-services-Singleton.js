@@ -1,6 +1,6 @@
 import axios from 'axios';
 import 'regenerator-runtime/runtime.js';
-
+import ErrorDecorator from './API-error-Decorator.js';
 const SYSTEM = `anton_lazurko`;
 const ENTITY = `events`;
 const URL = 'http://158.101.166.74:8080/api/data/';
@@ -12,47 +12,47 @@ class EventAPI {
     if (!instance) {
       instance = this;
     }
-    this.data = [];
-    this.error = {};
-    this.status = '';
-
     return instance;
   }
+  @ErrorDecorator
   async getEvent() {
-    try {
-      const { data, status } = await axios.get(`${URL}${SYSTEM}/${ENTITY}`);
-      this.data = data;
-      this.status = status;
-      return this.data;
-    } catch (error) {
-      this.error = error;
-      console.log(this.error);
-      return error;
-    }
+    const { data } = await axios.get(`${URL}${SYSTEM}/${ENTITY}`);
+    return data;
+    // try {
+    //   const { data, status } = await axios.get(`${URL}${SYSTEM}/${ENTITY}`);
+    //   this.data = data;
+    //   this.status = status;
+    //   return this.data;
+    // } catch (error) {
+    //   this.error = error;
+    //   return this.error;
+    // }
   }
+  @ErrorDecorator
   async addEvent(body) {
-    try {
-      const { status } = await axios.post(`${URL}${SYSTEM}/${ENTITY}`, body);
-      this.status = status;
-      console.log(this.status);
-      return status;
-    } catch (e) {
-      this.error = error;
-      console.log(this.error);
-      return error;
-    }
+    const { status } = await axios.post(`${URL}${SYSTEM}/${ENTITY}`, body);
+    return status;
+    // try {
+    //   const { status } = await axios.post(`${URL}${SYSTEM}/${ENTITY}`, body);
+    //   this.status = status;
+    //   return this.status;
+    // } catch (error) {
+    //   this.error = error;
+    //   return this.error;
+    // }
   }
+  @ErrorDecorator
   async deleteEvent(id) {
-    try {
-      const { status } = await axios.delete(`${URL}${SYSTEM}/${ENTITY}/${id}`);
-      this.status = status;
-      console.log(this.status);
-      return status;
-    } catch (e) {
-      this.error = error;
-      console.log(this.error);
-      return error;
-    }
+    const { status } = await axios.delete(`${URL}${SYSTEM}/${ENTITY}/${id}`);
+    return status;
+    // try {
+    //   const { status } = await axios.delete(`${URL}${SYSTEM}/${ENTITY}/${id}`);
+    //   this.status = status;
+    //   return this.status;
+    // } catch (error) {
+    //   this.error = error;
+    //   return this.error;
+    // }
   }
 }
 export const eventsSingleton = new EventAPI();
