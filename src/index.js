@@ -18,7 +18,7 @@ import {
 
 import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
 import { eventsSingleton } from './services/API-services-Singleton';
-import ErrorDecorator from './services/API-error-Decorator';
+
 import {
   participantSelectEl,
   inputEl,
@@ -40,6 +40,7 @@ import { alerts } from './alerts/alerts.js';
 import authAlert from './templates/auth-alert.hbs';
 import template from './templates/alert-template.hbs';
 import selectOptionTemplate from './templates/select-options-template.hbs';
+import completeToast from './templates/complete-toast.hbs';
 
 let userId = 0;
 const NOTHIG = 'Nothing';
@@ -119,7 +120,10 @@ const tdDelete = async e => {
         if (status === 204) {
           el.parentNode.classList.remove('table-success');
           el.parentNode.innerHTML = '';
-          alert('Event successfuly delete');
+          document.body.insertAdjacentHTML(
+            'afterbegin',
+            completeToast({ message: 'Event succesfuly delete' }),
+          );
         }
       });
     }
@@ -190,11 +194,20 @@ const onFormSubmit = async e => {
   // await addEvent(`{
 
   //using singletone pattern
-  await eventsSingleton.addEvent(
-    `{
+  await eventsSingleton
+    .addEvent(
+      `{
     "data":"${stringifyMeeting}"
   }`,
-  );
+    )
+    .then(status => {
+      if (status === 200) {
+        document.body.insertAdjacentHTML(
+          'afterbegin',
+          completeToast({ message: 'Event succesfuly added' }),
+        );
+      }
+    });
 
   refreshForm(
     inputEl,

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import 'regenerator-runtime/runtime.js';
-import ErrorDecorator from './API-error-Decorator.js';
+import { ErrorDecorator } from './API-error-Decorator.js';
 const SYSTEM = `anton_lazurko`;
 const ENTITY = `events`;
 const URL = 'http://158.101.166.74:8080/api/data/';

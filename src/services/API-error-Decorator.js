@@ -1,5 +1,5 @@
 import errorTemplate from '../templates/error-template.hbs';
-function ErrorDecorator(target, key, descriptor) {
+export const ErrorDecorator = (target, key, descriptor) => {
   const originalMethod = descriptor.value;
 
   descriptor.value = async function (...args) {
@@ -14,6 +14,4 @@ function ErrorDecorator(target, key, descriptor) {
   };
 
   return descriptor;
-}
-
-export default ErrorDecorator;
+};
