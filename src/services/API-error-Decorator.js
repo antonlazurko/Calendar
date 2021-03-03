@@ -6,10 +6,11 @@ export const ErrorDecorator = (target, key, descriptor) => {
     try {
       return await originalMethod.apply(this, args);
     } catch (error) {
-      document.body.insertAdjacentHTML(
-        'afterbegin',
-        errorTemplate({ message: error.message }),
-      );
+      console.log(error.message);
+      // document.body.insertAdjacentHTML(
+      //   'afterbegin',
+      //   errorTemplate({ message: error.message }),
+      // );
     }
   };
 
