@@ -33,7 +33,7 @@ For this in folder "src" user should find "calendar data.js" file and add new pa
 
 ### Saving user data on client-side
 
-All data that user input saves in user's brouser Local Storage. When user refresh aplcation page "Calendar" filling user's data.
+All data that user input saves on API server. When user refresh aplcation page "Calendar" all data will request from server.
 
 Using technologies
 -------------------------
