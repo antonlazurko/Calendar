@@ -1,8 +1,8 @@
 import axios from 'axios';
-import 'regenerator-runtime/runtime.js';
+import 'regenerator-runtime/runtime';
 
-const SYSTEM = `anton_lazurko`;
-const ENTITY = `events`;
+const SYSTEM = 'anton_lazurko';
+const ENTITY = 'events';
 const URL = 'http://158.101.166.74:8080/api/data/';
 
 export const getEvents = async () => {
@@ -13,9 +13,10 @@ export const getEvents = async () => {
   } catch (e) {
     console.log(e);
   }
+  return true;
 };
 
-export const addEvent = async body => {
+export const addEvent = async (body) => {
   try {
     const { status } = await axios.post(`${URL}${SYSTEM}/${ENTITY}`, body);
     console.log(status);
@@ -23,9 +24,10 @@ export const addEvent = async body => {
   } catch (e) {
     console.log(e);
   }
+  return true;
 };
 
-export const deleteEvent = async id => {
+export const deleteEvent = async (id) => {
   try {
     const { status } = await axios.delete(`${URL}${SYSTEM}/${ENTITY}/${id}`);
     console.log(status);
@@ -33,4 +35,5 @@ export const deleteEvent = async id => {
   } catch (e) {
     console.log(e);
   }
+  return true;
 };

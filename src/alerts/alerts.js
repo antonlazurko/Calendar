@@ -1,4 +1,4 @@
-export const alerts = {
+const alerts = {
   input: { message: 'Please type name' },
   participants: { message: 'Please choose participants' },
   days: { message: 'Please choose event day' },
@@ -7,3 +7,4 @@ export const alerts = {
     message: 'Time slot is already booked. Please chose other time or day',
   },
 };
+export default alerts;

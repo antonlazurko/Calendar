@@ -3,6 +3,7 @@ export const inputEl = document.querySelector('.input');
 export const formParticipantSelectEl = document.querySelector(
   '.form-user-select',
 );
+export const form = document.querySelector('#form');
 export const daySelectEl = document.querySelector('.day-select');
 export const timeSelectEl = document.querySelector('.time-select');
 export const submitBtn = document.querySelector('.submit-btn');

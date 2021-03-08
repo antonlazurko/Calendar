@@ -1,4 +1,4 @@
-//form options clean function
+// form options clean function
 export const refreshForm = (
   inputEl,
   daySelectEl,
@@ -12,45 +12,42 @@ export const refreshForm = (
   userSelectEl.value = null;
   memberSelectEl.value = 0;
 };
+// get meetings for current time
+export const getAvailableMeetings = (index, array) =>
+  array.filter((meeting) => meeting.data.info.time === index);
 
-//get meetings for current time
-export const getAvailableMeetings = (index, array) => {
-  return array.filter(meeting => {
-    return meeting.data.info.time === index;
-  });
-};
-
-//get meetings by participant
+// get meetings by participant
 export const getAvailableMeetingsByParticipant = (
   meetingsArray,
   userId,
   daysArray,
 ) => {
-  meetingsArray.map(meeting => {
+  meetingsArray.map((meeting) => {
     if (meeting.data.participants.includes(userId)) {
       meetingDaysObjGeneration(meeting, daysArray);
     }
+    return true;
   });
 };
 
 export const meetingDaysObjGeneration = (meetingObj, daysArr) => {
-  const day = meetingObj.data.info.day;
+  const { day } = meetingObj.data.info;
   daysArr[day] = {
     name: `${meetingObj.data.title} <button type="button" class="btn-close btn-remove" data-id="${meetingObj.id}"></button>`,
     id: meetingObj.id,
     className: 'table-success ',
   };
 };
-//get  selected participants from form
-export const getSelectedMembers = userSelectEl => {
+// get  selected participants from form
+export const getSelectedMembers = (userSelectEl) => {
   const values = [];
   const select = userSelectEl.options;
   if (userSelectEl.multiple) {
     for (let i = 0; i < select.length; i += 1) {
-      if (select[i].selected) values.push(parseInt(select[i].value));
+      if (select[i].selected) values.push(parseInt(select[i].value, 10));
     }
   } else {
-    values.push(parseInt(userSelectEl.value));
+    values.push(parseInt(userSelectEl.value, 10));
   }
   return values;
 };
@@ -58,44 +55,47 @@ export const modalToggle = () => {
   const createModal = document.querySelector('.create-modal-backdrop');
   createModal.classList.toggle('create-modal-close');
 };
-export const onEscPress = event => {
+
+export const onEscPress = (event) => {
   if (event.code === 'Escape') {
     modalToggle();
     window.removeEventListener('keydown', onEscPress);
   }
 };
 
-//select options render function
+// select options render function
 export const selectCreator = (array, node, selectOtionTemplate) => {
-  array.map(item => {
+  array.map((item) => {
     node.insertAdjacentHTML('beforeend', selectOtionTemplate(item));
+    return true;
   });
 };
 
-//select member options render function
+// select member options render function
 export const selectMemberCreator = (array, node, selectOtionTemplate) => {
-  array.map(item => {
+  array.map((item) => {
     node.insertAdjacentHTML('beforeend', selectOtionTemplate(item.user));
+    return true;
   });
 };
 
-//hidden functional btns for 'users'
-export const disableBtn = btn => {
+// hidden functional btns for 'users'
+export const disableBtn = (btn) => {
   btn.setAttribute('disabled', 'true');
 };
 
-//realized restrictions for autorized user
+// realized restrictions for autorized user
 export const userRestructionsHandler = (participant, createEventBtn) => {
   createEventBtn.removeAttribute('disabled');
 
   if (!participant.isAdmin) {
     disableBtn(createEventBtn);
     const tableRemoveBtn = document.querySelectorAll('.btn-remove');
-    tableRemoveBtn.forEach(btn => disableBtn(btn));
+    tableRemoveBtn.forEach((btn) => disableBtn(btn));
   }
 };
 
-//markup render
+// markup render
 export const markupRender = (
   participants,
   confirmSelect,
