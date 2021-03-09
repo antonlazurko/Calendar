@@ -39,23 +39,23 @@ describe('CRUD : GET', () => {
   });
 });
 
-// // EVENT CREATE TEST
-// describe('CRUD : POST', () => {
-//   let response;
-//   let statusCode;
-//   let body;
-//   beforeEach(() => {
-//     body = '{ title: "asd", participants: [4], info: { day: 2, time: 8 } }';
-//     statusCode = 200;
-//     response = { data: { status } };
-//   });
-//   test('If event created sholud return status 200', async () => {
-//     axios.post.mockReturnValue(response);
-//     return eventsSingleton.addEvent(body).then((status) => {
-//       expect(status).toEqual(statusCode);
-//     });
-//   });
-// });
+// EVENT CREATE TEST
+describe('CRUD : POST', () => {
+  let response;
+  let status;
+  let body;
+  beforeEach(() => {
+    body = '{ title: "asd", participants: [4], info: { day: 2, time: 8 } }';
+    status = 200;
+    response = { data: { status } };
+  });
+  test('If event was added should be called', () => {
+    axios.post.mockResolvedValue(response);
+    eventsSingleton.addEvent(body).then(() => {
+      expect(eventsSingleton.addEvent).toHaveBeenCalled();
+    });
+  });
+});
 
 // // EVENT DELETE TEST
 describe('CRUD : DELETE', () => {
@@ -67,10 +67,10 @@ describe('CRUD : DELETE', () => {
     id = 'dd1800c6-32ff-4871-b929-b0104d633de9';
     response = { data: { status } };
   });
-  test('If event was deleted should return status 204', () => {
+  test('If event was deleted should be called', () => {
     axios.delete.mockResolvedValue(response);
-    return eventsSingleton.deleteEvent(id).then((data) => {
-      expect(data.status).toEqual(status);
+    eventsSingleton.deleteEvent(id).then(() => {
+      expect(eventsSingleton.deleteEvent).toHaveBeenCalled();
     });
   });
 });

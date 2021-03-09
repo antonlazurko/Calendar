@@ -9,7 +9,9 @@
     "prod": "webpack --mode=production",
     "predeploy": "npm run prod",
     "deploy": "gh-pages -d dist ",
-    "test": "jest"
+    "test": "jest --no-cache",
+    "test:coverage": "jest --coverage"
+
   },
   "repository": {
     "type": "git",

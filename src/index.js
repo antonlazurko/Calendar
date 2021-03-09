@@ -261,5 +261,3 @@ participantSelectEl.addEventListener('change', participantSelectChange);
 submitBtn.addEventListener('click', onFormSubmit);
 cancelCreateEventBtn.addEventListener('click', onCancelCreateEventBtn);
 authBtnConfirm.addEventListener('click', onAuthConfirm);
-
-export default { validateForm };
