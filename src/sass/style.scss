@@ -1,35 +1,36 @@
-$borderBtn:1px solid #ced4da;
-$bcgBtnColor:#ebebeb;
-.header{
+$borderBtn: 1px solid #ced4da;
+$bcgBtnColor: #ebebeb;
+.header {
   display: flex;
-justify-content: space-between;
-align-items: center
+  justify-content: space-between;
+  align-items: center;
 }
-.select-create{
-   display: flex;
-justify-content: space-between;
+.select-create {
+  display: flex;
+  justify-content: space-between;
 }
 
-.col-md-3{
+.col-md-3 {
   width: 150px;
   margin-right: 15px;
 }
-.createEventBtn{
-  background-color: $bcgBtnColor ;
+.createEventBtn {
+  background-color: $bcgBtnColor;
   border: $borderBtn;
 }
-.btn-light{  border: $borderBtn;
+.btn-light {
+  border: $borderBtn;
 }
 
-.create-modal-backdrop{
-position: absolute;
-    width: 100%;
-    height: 500px;
-    top: 0;
-    left: 0;
-    z-index: 999;
-     background-color: rgba(0, 0, 0, 0.56);
+.create-modal-backdrop {
+  position: absolute;
+  width: 100%;
+  height: 500px;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.56);
 }
-.create-modal-close{
-display: none;
+.create-modal-close {
+  display: none;
 }

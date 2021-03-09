@@ -14,9 +14,10 @@ import {
   markupRender,
   modalToggle,
   onEscPress,
-} from './utils/utils.js';
+} from './utils/utils';
 
-import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
+// import { getEvents, deleteEvent, addEvent } from './services/API-service.js';
+// eslint-disable-next-line import/named
 import { eventsSingleton } from './services/API-services-Singleton';
 
 import {
@@ -33,10 +34,11 @@ import {
   confirmSelect,
   authBtnConfirm,
   authModalBackdrop,
-} from './refs/refs.js';
+  form,
+} from './refs/refs';
 
-import { timeArray, participants, daysArray } from './calendar-data.js';
-import { alerts } from './alerts/alerts.js';
+import { timeArray, participants, daysArray } from './calendar-data';
+import alerts from './alerts/alerts';
 import authAlert from './templates/auth-alert.hbs';
 import template from './templates/alert-template.hbs';
 import selectOptionTemplate from './templates/select-options-template.hbs';
@@ -46,7 +48,7 @@ let userId = 0;
 const NOTHIG = 'Nothing';
 let participant = {};
 
-//markup render
+// markup render
 markupRender(
   participants,
   confirmSelect,
@@ -58,32 +60,37 @@ markupRender(
   timeSelectEl,
   daySelectEl,
 );
+// eslint-disable-next-line no-use-before-define
 createTable(userId);
 
-//participant change function
-const participantSelectChange = e => {
+// participant change function
+const participantSelectChange = (e) => {
+  // eslint-disable-next-line radix
   userId = parseInt(e.target.value);
+  // eslint-disable-next-line no-use-before-define
   createTable(userId);
 };
-//table render function
-async function createTable(userId) {
-  let meetings = [];
+// table render function
+async function createTable() {
+  const meetings = [];
   // using singleton pattern
-  await eventsSingleton.getEvent().then(res =>
-    // await getEvents().then(res =>
-    res?.map(event =>
-      meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
-    ),
-  );
+  await eventsSingleton
+    .getEvent()
+    // eslint-disable-next-line max-len
+    .then((res) =>
+      res?.map((event) =>
+        meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
+      ),
+    );
   let rows = '';
   timeArray.map((timeObj, index) => {
     const availableMeetings = getAvailableMeetings(index, meetings);
     const days = new Array(5).fill('');
 
     if (userId === 0) {
-      availableMeetings.map(meeting => {
-        meetingDaysObjGeneration(meeting, days);
-      });
+      availableMeetings.map((meeting) =>
+        meetingDaysObjGeneration(meeting, days),
+      );
     } else {
       getAvailableMeetingsByParticipant(availableMeetings, userId, days);
     }
@@ -97,26 +104,28 @@ async function createTable(userId) {
           <td class=${days[3].className}>${days[3].name || ''}</td>
           <td class=${days[4].className}>${days[4].name || ''}</td>
         </tr>`;
+    return true;
   });
   tableBody.innerHTML = rows;
 
+  // eslint-disable-next-line no-use-before-define
   tableBody.addEventListener('click', tdDelete);
   userRestructionsHandler(participant, createEventBtn);
 }
 
-//table data content delete function
-const tdDelete = async e => {
+// table data content delete function
+const tdDelete = async (e) => {
   const el = e.target;
   if (el.tagName === 'BUTTON') {
+    // eslint-disable-next-line no-alert
     const result = window.confirm(
       `Are you shure you want to delete "${el.parentNode.textContent}" event?`,
     );
     if (result) {
       const meetingId = e.target.getAttribute('data-id');
-      // await deleteEvent(meetingId).then(status => {
 
-      //using singletone pattern
-      await eventsSingleton.deleteEvent(meetingId).then(status => {
+      // using singletone pattern
+      await eventsSingleton.deleteEvent(meetingId).then((status) => {
         if (status === 204) {
           el.parentNode.classList.remove('table-success');
           el.parentNode.innerHTML = '';
@@ -130,7 +139,7 @@ const tdDelete = async e => {
   }
 };
 
-//checking valid data function
+// checking valid data function
 const validateForm = async () => {
   if (inputEl.value === '') {
     form.insertAdjacentHTML('afterbegin', template(alerts.input));
@@ -148,22 +157,21 @@ const validateForm = async () => {
     form.insertAdjacentHTML('afterbegin', template(alerts.participants));
     return false;
   }
-  let meetings = [];
-  // await getEvents().then(res =>
+  const meetings = [];
 
-  //using singletone pattern
+  // using singletone pattern
   await eventsSingleton
     .getEvent()
-    .then(res =>
-      res?.map(event =>
+    .then((res) =>
+      res?.map((event) =>
         meetings.push({ id: event.id, data: JSON5.parse(event.data) }),
       ),
     );
 
   const isAvailableTime = meetings.filter(
-    meeting =>
-      meeting.data.info.day === parseInt(daySelectEl.value) &&
-      meeting.data.info.time === parseInt(timeSelectEl.value),
+    (meeting) =>
+      meeting.data.info.day === parseInt(daySelectEl.value, 10) &&
+      meeting.data.info.time === parseInt(timeSelectEl.value, 10),
   );
   if (isAvailableTime.length) {
     form.insertAdjacentHTML('afterbegin', template(alerts.unavailable));
@@ -172,35 +180,32 @@ const validateForm = async () => {
   return true;
 };
 
-//on form submit function
-const onFormSubmit = async e => {
+// on form submit function
+const onFormSubmit = async (e) => {
   e.preventDefault();
 
   if (!(await validateForm())) {
     return;
   }
 
-  //create event object
+  // create event object
   const meeting = {
     title: `'${inputEl.value}'`,
     participants: [...getSelectedMembers(formParticipantSelectEl)],
     info: {
-      day: parseInt(daySelectEl.value),
-      time: parseInt(timeSelectEl.value),
+      day: parseInt(daySelectEl.value, 10),
+      time: parseInt(timeSelectEl.value, 10),
     },
   };
   const stringifyMeeting = JSON.stringify(meeting).replace(/"/g, '');
-
-  // await addEvent(`{
-
-  //using singletone pattern
+  // using singletone pattern
   await eventsSingleton
     .addEvent(
       `{
     "data":"${stringifyMeeting}"
   }`,
     )
-    .then(status => {
+    .then((status) => {
       if (status === 200) {
         document.body.insertAdjacentHTML(
           'afterbegin',
@@ -220,8 +225,8 @@ const onFormSubmit = async e => {
   modalToggle();
 };
 
-//on cancel form button click function
-const onCancelCreateEventBtn = e => {
+// on cancel form button click function
+const onCancelCreateEventBtn = (e) => {
   e.preventDefault();
   refreshForm(
     inputEl,
@@ -233,12 +238,12 @@ const onCancelCreateEventBtn = e => {
   modalToggle();
 };
 
-//on auth-modal confirm function
+// on auth-modal confirm function
 const onAuthConfirm = () => {
   if (confirmSelect.value) {
-    participant = participants.find(participant => {
-      return participant.user.id === Number(confirmSelect.value);
-    });
+    participant = participants.find(
+      (member) => member.user.id === Number(confirmSelect.value),
+    );
     createTable(0);
     userRestructionsHandler(participant, createEventBtn);
     authModalBackdrop.remove();
@@ -250,7 +255,6 @@ const onAuthConfirm = () => {
     return;
   }
   authModal.insertAdjacentHTML('afterbegin', authAlert(alerts.participants));
-  return;
 };
 
 participantSelectEl.addEventListener('change', participantSelectChange);
